@@ -2,7 +2,7 @@
 
 Living history refers to the history that is relayed by people. For example, consider the history of Rumelihisarustu. If you talked with people who live here now, lived here before, what would they tell you about what they know or what they have been told? In this project, you will create a crowdsourcing application for documenting stories of people. It will allow living history posts, including location, time, and story. Living history stories may refer to tangible things or not, such as a trolleybus or how people used to visit each other during holidays. Stories are often related to a given time, people, and location. Support for such information must be given.
 
-# Our Awesome Team
+# :neckbeard: Our Awesome Team
 
 |                | Name          | Surname             | Email                     | Role                        |
 |--------------  | ------------- | ------------------- | ------------------        | ---------------------       |
