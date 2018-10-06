@@ -61,7 +61,7 @@ Configuration details will be added by November. Stay tuned!
 
 ## :hearts: Credits
 
-Credit goes to **[Mehmet Kagan Kayaalp](https://www.linkedin.com/in/mehmet-ka%C4%9Fan-kayaalp/)** & **[Yasser El Kabbout](https://www.linkedin.com/in/yasserkabbout/)** & **[Umut Seven](https://www.linkedin.com/in/umut-seven-03a459107/)** & **[Deniz Gungor](https://www.linkedin.com/in/deniz-gungor-736a179a/)** & **[Professor Dr. Suzan Üsküdarlı](https://www.linkedin.com/in/suzanuskudarli/)** from Bogaziçi University.
+Credit goes to **[Mehmet Kagan Kayaalp](https://www.linkedin.com/in/mehmet-ka%C4%9Fan-kayaalp/)** & **[Alan Endersoy](https://www.linkedin.com/in/enderalansoy/)** & **[Yasser El Kabbout](https://www.linkedin.com/in/yasserkabbout/)** & **[Umut Seven](https://www.linkedin.com/in/umut-seven-03a459107/)** & **[Deniz Gungor](https://www.linkedin.com/in/deniz-gungor-736a179a/)** & **[Professor Dr. Suzan Üsküdarlı](https://www.linkedin.com/in/suzanuskudarli/)** from Bogaziçi University.
 
 ## :innocent: License
 
