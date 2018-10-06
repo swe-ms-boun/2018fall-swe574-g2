@@ -39,6 +39,8 @@ Configuration details will be added by November. Stay tuned!
   :blue_book: **[A. Meeting Schedule & Notes](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/A.-Meetings-Schedule-&-Notes)**
   
   :muscle: **[B. Weekly Effort](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/B.-Weekly-Effort)**
+  
+  :basketball: **[C. Team Details](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/C.-Team-Details)**
 
 
 
