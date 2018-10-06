@@ -60,8 +60,8 @@ Configuration details will be added by November. Stay tuned!
 
 ## :bulb: Help us improve!
 
-1. A template is provided if you would like to submit a Feature Request issue.  **[Feature Request]**
-2. A template is provided if you would like to submit a Bug Report issue. **[Bug Report]**
+1. A template will be provided if you would like to submit a Feature Request issue.  **[Feature Request]**
+2. A template will be provided if you would like to submit a Bug Report issue. **[Bug Report]**
 
 
 ## :round_pushpin: Releases
