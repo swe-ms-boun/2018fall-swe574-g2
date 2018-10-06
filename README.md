@@ -15,23 +15,26 @@ Configuration details will be added by November. Stay tuned!
 
 ## :mortar_board: Read More!
 
-:question: **[1. Project Description](https://github.com/yasserkabbout/tweeLights/wiki/1.-Project-Description)**
+:question: **[1. Project Description](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/1.-Project-Description)**
 
-:bar_chart: **[2. Project Requirements](https://github.com/yasserkabbout/tweeLights/wiki/2.-Project-Requirements-RSD)**
+:bar_chart: **[2. Project Requirements](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/2.-Project-Requirements-RSD)**
 
-:art: **[3. System Design](https://github.com/yasserkabbout/tweeLights/wiki/3.-System-Design-Sketches)**
+:love_letter: **[3. Memories Collected](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/3.-Memories-Collected)**
 
-:dart: **[4. Project Plan](https://github.com/yasserkabbout/tweeLights/wiki/4.-Project-Plan)**
+:art: **[4. System Design]()**
 
-:moneybag: **[5. Project Market Analysis](https://github.com/yasserkabbout/tweeLights/wiki/5.-Project-Market-Analysis)**
+:dart: **[5. Project Plan]()**
 
-:rocket: **[6. Project Complexity Analysis](https://github.com/yasserkabbout/tweeLights/wiki/6.-Project-Complexity-Analysis)**
+:moneybag: **[6. Project Market Analysis]()**
 
-:surfer: **[7. Team SWOT Analysis](https://github.com/yasserkabbout/tweeLights/wiki/7.-Project's-Team-SWOT-Analysis)**
+:rocket: **[7. Project Complexity Analysis]()**
 
- 📑 **[ 8. Git Cheat Sheet](https://github.com/yasserkabbout/tweeLights/blob/master/images/github-git-cheat-sheet.pdf)**
+:surfer: **[8. Team SWOT Analysis]()**
 
-:computer: **[We are live! Click here](http://tweelights.yasserkabbout.com/)**
+:scroll:  **[ 9. Change Request #1]()**
+
+
+  📑 **[ 10. Git Cheat Sheet]()**
 
 
 
