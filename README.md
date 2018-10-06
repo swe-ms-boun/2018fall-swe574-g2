@@ -30,22 +30,24 @@ Configuration details will be added by November. Stay tuned!
 
 :bar_chart: **[2. Project Requirements](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/2.-Project-Requirements-RSD)**
 
-:love_letter: **[3. Memories Collected](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/3.-Memories-Collected)**
+:mag: **[3. Questions for Elicitation](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/3.-Questions-for-Elicitation)**
 
-:art: **[4. System Design](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/4.-System-Design-and-Mockups)**
+:love_letter: **[4. Memories Collected](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/4.-Memories-Collected)**
 
-:dart: **[5. Project Plan](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/5.-Project-Plan)**
+:art: **[5. System Design](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/5.-System-Design-and-Mockups)**
 
-:moneybag: **[6. Project Market Analysis]()**
+:dart: **[6. Project Plan](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/6.-Project-Plan)**
 
-:rocket: **[7. Project Complexity Analysis]()**
+:moneybag: **[7. Project Market Analysis]()**
 
-:surfer: **[8. Team SWOT Analysis]()**
+:rocket: **[8. Project Complexity Analysis]()**
 
-:scroll:  **[ 9. Change Request Form]()**
+:surfer: **[9. Team SWOT Analysis]()**
+
+:scroll:  **[ 10. Change Request Form]()**
 
 
-  📑 **[ 10. Git Cheat Sheet](https://github.com/swe-ms-boun/2018fall-swe574-g2/blob/master/PDF%20Files/github-git-cheat-sheet.pdf)**
+  📑 **[ 11. Git Cheat Sheet](https://github.com/swe-ms-boun/2018fall-swe574-g2/blob/master/PDF%20Files/github-git-cheat-sheet.pdf)**
 
 :blue_book: **[A. Meeting Schedule & Notes](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/A.-Meetings-Schedule-&-Notes)**
 
