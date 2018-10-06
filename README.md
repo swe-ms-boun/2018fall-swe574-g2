@@ -34,7 +34,7 @@ Configuration details will be added by November. Stay tuned!
 :scroll:  **[ 9. Change Request #1]()**
 
 
-  📑 **[ 10. Git Cheat Sheet]()**
+  📑 **[ 10. Git Cheat Sheet](https://github.com/swe-ms-boun/2018fall-swe574-g2/blob/master/PDF%20Files/github-git-cheat-sheet.pdf)**
 
 :blue_book: **[A. Meeting Schedule & Notes](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/A.-Meetings-Schedule-&-Notes)**
 
