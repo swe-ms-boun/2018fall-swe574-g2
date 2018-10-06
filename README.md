@@ -65,7 +65,7 @@ Configuration details will be added by November. Stay tuned!
 
 
 ## :round_pushpin: Releases
-**[You can reach the first and second working prototypes (v1.0 and v1.1) by clicking here]**
+Releases/Prototypes will be avilable by the end of November 2018.
 
 
 
