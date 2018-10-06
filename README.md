@@ -21,9 +21,9 @@ Configuration details will be added by November. Stay tuned!
 
 :love_letter: **[3. Memories Collected](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/3.-Memories-Collected)**
 
-:art: **[4. System Design]()**
+:art: **[4. System Design](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/4.-System-Design-and-Mockups)**
 
-:dart: **[5. Project Plan]()**
+:dart: **[5. Project Plan](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/5.-Project-Plan)**
 
 :moneybag: **[6. Project Market Analysis]()**
 
@@ -35,12 +35,15 @@ Configuration details will be added by November. Stay tuned!
 
 
   📑 **[ 10. Git Cheat Sheet]()**
-  
-  :blue_book: **[A. Meeting Schedule & Notes](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/A.-Meetings-Schedule-&-Notes)**
-  
-  :muscle: **[B. Weekly Effort](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/B.-Weekly-Effort)**
-  
-  :basketball: **[C. Team Details](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/C.-Team-Details)**
+
+:blue_book: **[A. Meeting Schedule & Notes](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/A.-Meetings-Schedule-&-Notes)**
+
+:muscle: **[B. Weekly Effort](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/B.-Weekly-Effort)**
+
+:basketball: **[C. Team Details](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/C.-Team-Details)**
+
+
+:computer: **[We are live! Click here]()**
 
 
 
