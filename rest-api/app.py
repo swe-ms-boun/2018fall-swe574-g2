@@ -1,17 +1,30 @@
 #!flask/bin/python
 from flask import Flask, jsonify, make_response
 from flask_httpauth import HTTPBasicAuth
+from form import *
 
+import logging
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
+
+
 USERNAME = "root"
 PASSWORD = "hoodyhu"
 
 
+LOGGER = logging.getLogger()
+
+
 @app.route('/')
-def index():
-    return "Hello, World!"
+def sitemap():
+    links = []
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint in ['static', 'available_urls']:
+            continue
+        links.append('%s' % rule.rule)
+    return jsonify(available_urls=sorted(links))
+
 
 # Example data taken from the web.
 tasks = [
