@@ -1,0 +1,52 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>Demo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="./styles/annotation-style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="./scripts/anno.js"></script>
+    <script>
+      function getAnn() {
+        console.log(anno.getAnnotations());
+        let annotationList = `<table class="table table-striped">
+          <thead>
+              <tr>
+                <th scope="col">Text</th>
+                <th scope="col">x</th>
+                <th scope="col">y</th>
+                <th scope="col">Height</th>
+                <th scope="col">Width</th>
+              </tr>
+            </thead>
+            <tbody>
+          `;
+        anno.getAnnotations().forEach((a) => {
+          annotationList += `
+              <tr> 
+                <th scope="row">${a.text}</th>
+                <td>${a.shapes[0].geometry.x}</td>
+                <td>${a.shapes[0].geometry.y}</td>
+                <td>${a.shapes[0].geometry.height}</td>
+                <td>${a.shapes[0].geometry.width}</td>
+              </tr>
+          `;
+        });
+        annotationList += `</tbody></table>`;
+        document.getElementById('annotations').innerHTML = annotationList;
+      }
+    </script>
+  </head>
+
+  <body>
+        <div class="card" style="width: 52rem;">
+            <img class="annotatable card-img-top" src="pp.jpg" alt="Card image cap">
+            <div class="card-body">
+              <button type="button" class="btn btn-primary" onclick="getAnn()">Show annotations</button>
+            </div>
+            <div class="card-footer">
+                <div id="annotations"></div>
+              </div>
+          </div>
+    </div>
+  </body>
+</html>
