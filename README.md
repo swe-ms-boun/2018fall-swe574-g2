@@ -1,5 +1,7 @@
 # :grinning: Welcome to Thymesis - Living History Project!
 
+<p align="center"><img height="350" width="350" src="http://i67.tinypic.com/v2uv82.png" border="0" alt="Image and video hosting by TinyPic"></p>
+
 Thymesis refers to the history that is relayed by people. For example, consider the history of Rumelihisarustu. If you talked with people who live here now, lived here before, what would they tell you about what they know or what they have been told? In this project, you will create a crowdsourcing application for documenting stories of people. It will allow living history posts, including location, time, and story. Thymesis stories may refer to tangible things or not, such as a trolleybus or how people used to visit each other during holidays. Stories are often related to a given time, people, and location. Support for such information must be given.
 
 # :alien: Our Awesome Team
