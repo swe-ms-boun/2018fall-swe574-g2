@@ -109,6 +109,22 @@ def add_annotation(form):
             mongo_query['body']['text_direction'] = body_part['text_direction']
         if 'processing_language' in body_part:
             mongo_query['body']['processing_language'] = body_part['processing_language']
+        if 'selector' in body_part:
+            mongo_query['body']['selector'] = {}
+            selector_part = body_part['selector']
+            if "id" in selector_part:
+                mongo_query['body']['selector']['id'] = selector_part['id']
+            if "type" in selector_part and "TextPositionSelector" in selector_part['type']:
+                mongo_query['body']['selector']['type'] = selector_part['type']
+                if "start" in selector_part:
+                    mongo_query['body']['selector']['start'] = selector_part['start']
+                if "end" in selector_part:
+                    mongo_query['body']['selector']['end'] = selector_part['end']
+            elif "type" in selector_part and "rectangle" in selector_part['type']:
+                mongo_query['body']['selector']['type'] = selector_part['type']
+                if "value" in selector_part:
+                    # x,y,w,h;20,30,100,100
+                    mongo_query['body']['selector']['value'] = selector_part['value']
 
     if 'target' in form.data and form.data['target']:
         body_part = form.data['target']
@@ -125,6 +141,22 @@ def add_annotation(form):
             mongo_query['target']['text_direction'] = body_part['text_direction']
         if 'processing_language' in body_part:
             mongo_query['target']['processing_language'] = body_part['processing_language']
+        if 'selector' in body_part:
+            mongo_query['target']['selector'] = {}
+            selector_part = body_part['selector']
+            if "id" in selector_part:
+                mongo_query['target']['selector']['id'] = selector_part['id']
+            if "type" in selector_part and "TextPositionSelector" in selector_part['type']:
+                mongo_query['target']['selector']['type'] = selector_part['type']
+                if "start" in selector_part:
+                    mongo_query['target']['selector']['start'] = selector_part['start']
+                if "end" in selector_part:
+                    mongo_query['target']['selector']['end'] = selector_part['end']
+            elif "type" in selector_part and "rectangle" in selector_part['type']:
+                mongo_query['target']['selector']['type'] = selector_part['type']
+                if "value" in selector_part:
+                    # x,y,w,h;20,30,100,100
+                    mongo_query['target']['selector']['value'] = selector_part['value']
 
     if 'creator_id' in form.data and form.data['creator_id']:
         user = mongo.db.creator.find_one({"id": form.data['creator_id']})
