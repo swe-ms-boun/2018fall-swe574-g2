@@ -1,13 +1,24 @@
 #!flask/bin/python
-from flask import Flask, jsonify, make_response
+# coding=utf-8
+from flask import Flask, jsonify, make_response, abort, request, jsonify
 from flask_httpauth import HTTPBasicAuth
+from flask_restful import Api
 from form import *
+from flask_pymongo import PyMongo
+from decorator import validate_form
+import hashlib
+import json
 
 import logging
 
 app = Flask(__name__)
+api = Api(app)
 auth = HTTPBasicAuth()
 
+
+app = Flask(__name__)
+app.config["MONGO_URI"] = "mongodb://localhost:27017/annotation"
+mongo = PyMongo(app)
 
 USERNAME = "root"
 PASSWORD = "hoodyhu"
@@ -26,28 +37,135 @@ def sitemap():
     return jsonify(available_urls=sorted(links))
 
 
-# Example data taken from the web.
-tasks = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol',
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web',
-        'done': False
+@app.route('/add/creator', methods=['PUT'])
+#@auth.login_required
+@validate_form(form=CreatorForm)
+def add_creator(form):
+    email = form.data['email']
+    email_sha1 = hashlib.sha1(email).hexdigest()
+
+    mongo_query = {
+        "email": form.data['email'],
+        "id": form.data['id'],
+        "email_sha1": email_sha1,
+        "home_page": form.data['home_page']
     }
-]
+
+    if 'name' in form.data and form.data['name']:
+        mongo_query['name'] = form.data['name']
+
+    if 'nick' in form.data and form.data['nick']:
+        mongo_query['nick'] = form.data['nick']
+
+    try:
+        doc = mongo.db.creator.insert(mongo_query)
+        return jsonify({'ok': True, 'message': 'Creator created successfully!'}), 200
+    except Exception:
+        return jsonify({'ok': False, 'message': 'Ops, creator could not be created! Talked with awesome team :)'}), 400
 
 
-@app.route('/tasks', methods=['GET'])
+@app.route('/get/creator/<id>', methods=['GET'])
 @auth.login_required
-def get_tasks():
-    return jsonify({'tasks': tasks})
+def get_spesific_creator_by_id(id):
+    user = mongo.db.creator.find_one({"id": id})
+    if user:
+        return jsonify({'ok': True, 'message': 'User email: ' + user['email']}), 200
+    else:
+        return jsonify({'ok': False, 'message': 'Ops, user not found!'}), 500
 
+
+@app.route('/get/user/<username>', methods=['GET'])
+@auth.login_required
+def get_spesific_creator_by_username(username):
+    user = mongo.db.creator.find_one({"username": username})
+    if user:
+        return jsonify({'ok': True, 'message': 'User email: ' + user['email']}), 200
+    else:
+        return jsonify({'ok': False, 'message': 'Ops, user not found! Username is not necessary field'}), 404
+
+
+@app.route('/add/annotation/', methods=['PUT'])
+#@auth.login_required
+@validate_form(form=BaseAnnotation)
+def add_annotation(form):
+    mongo_query = {
+        "context": form.data['context'],
+        "id": form.data['id'],
+        "type": form.data['type']
+    }
+
+    if 'body' in form.data and form.data['body']:
+        body_part = form.data['body']
+        body_part = json.loads(body_part)
+        mongo_query['body'] = {}
+        mongo_query['body']['id'] = body_part['id']
+        if 'format' in body_part:
+            mongo_query['body']['format'] = body_part['format']
+        if 'language' in body_part:
+            mongo_query['body']['language'] = body_part['language']
+        if 'type' in body_part:
+            mongo_query['body']['type'] = body_part['type']
+        if 'text_direction' in body_part:
+            mongo_query['body']['text_direction'] = body_part['text_direction']
+        if 'processing_language' in body_part:
+            mongo_query['body']['processing_language'] = body_part['processing_language']
+
+    if 'target' in form.data and form.data['target']:
+        body_part = form.data['target']
+        body_part = json.loads(body_part)
+        mongo_query['target'] = {}
+        mongo_query['target']['id'] = body_part['id']
+        if 'format' in body_part:
+            mongo_query['target']['format'] = body_part['format']
+        if 'language' in body_part:
+            mongo_query['target']['language'] = body_part['language']
+        if 'type' in body_part:
+            mongo_query['target']['type'] = body_part['type']
+        if 'text_direction' in body_part:
+            mongo_query['target']['text_direction'] = body_part['text_direction']
+        if 'processing_language' in body_part:
+            mongo_query['target']['processing_language'] = body_part['processing_language']
+
+    if 'creator_id' in form.data and form.data['creator_id']:
+        user = mongo.db.creator.find_one({"id": form.data['creator_id']})
+        mongo_query["creator"] = {}
+        mongo_query["creator"]["id"] = user['id']
+
+        if 'type' in user:
+            mongo_query["creator"]["type"] = user['type']
+
+        mongo_query["creator"]["email"] = user['email']
+        mongo_query["creator"]["email_sha1"] = user['email_sha1']
+        mongo_query["creator"]["home_page"] = user['home_page']
+
+        if 'name' in user:
+            mongo_query['creator']['name'] = user['name']
+        if 'nick' in user:
+            mongo_query['creator']['nick'] = user['nick']
+
+    try:
+        doc = mongo.db.annotation.insert(mongo_query)
+        return jsonify({'ok': True, 'message': 'Annotation is created successfully!'}), 200
+    except Exception:
+        return jsonify({'ok': False, 'message': 'Ops, annotation could not be created! Talked with awesome team :)'}), 400
+
+
+@app.route('/get/creator/<creator_id>/annotations', methods=['GET'])
+def get_annotations_by_creator(creator_id):
+    annotations = mongo.db.annotation.find({"creator.id": creator_id})
+    annotation_list = []
+    for annotation in annotations:
+        # ObjectID is not JSON serializable so pop the _id.
+        annotation.pop('_id')
+        annotation_list.append(annotation)
+    if annotations.count():
+        return jsonify({'ok': True, 'message': annotation_list}), 200
+    else:
+        user = mongo.db.creator.find_one({"id": creator_id})
+        if user:
+            return jsonify({'ok': False, 'message': 'There is no annotation for the user'}), 500
+        else:
+            return jsonify({'ok': False, 'message': 'You are searching non-exist user annotations'}), 500
 
 @app.errorhandler(404)
 def not_found(error):
