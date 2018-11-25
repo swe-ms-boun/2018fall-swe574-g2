@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,8 +26,9 @@ SECRET_KEY = 'asfp0#0#1drxu76&&t1a^zg^kg!lff_gr$mg+ma)$8p9)@!zv+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+LOGIN_REDIRECT_URL = '/'
 
 # Application definition
 
@@ -56,7 +58,7 @@ ROOT_URLCONF = 'thymesis_webapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [PROJECT_ROOT + '/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,6 +66,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.static',
+                'django.core.context_processors.media'
             ],
         },
     },
@@ -85,19 +89,45 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'User.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'tr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Istanbul'
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
+
+
+MEDIA_ROOT = PROJECT_ROOT + '/media/'
+STATIC_ROOT = PROJECT_ROOT + '/static/'
+PIPELINE_ROOT = PROJECT_ROOT + '/static/'
+
+MEDIA_URL = '/media/'
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    ('img', PROJECT_ROOT + '/static/img/'),
+    ('js', PROJECT_ROOT + '/static/js/'),
+    ('css', PROJECT_ROOT + '/static/css/'),
+    ('swampdragon', PROJECT_ROOT + '/static/swampdragon/'),
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+)
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
+
 
 
 # Static files (CSS, JavaScript, Images)

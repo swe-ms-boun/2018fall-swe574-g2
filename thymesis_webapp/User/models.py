@@ -10,13 +10,13 @@ AGENT_CHOICES = (
 
 
 class User(models.Model):
+    REQUIRED_FIELDS = ('email', 'type', 'home_page')
+
     nick = models.CharField(
         max_length=50,
         verbose_name=u'Kullanıcı Adı',
         db_index=True,
-        unique=True,
-        null=True,
-        blank=True
+        unique=True
     )
     first_name = models.CharField(
         verbose_name=u'Ad',
@@ -37,14 +37,16 @@ class User(models.Model):
     )
 
     type = models.CharField(max_length=30, choices=AGENT_CHOICES, default='person')
-    home_page = models.CharField(max_length=100)
+    home_page = models.CharField(max_length=100, unique=True)
+
+    USERNAME_FIELD = 'nick'
 
     def __unicode__(self):
         return self.email
 
     def get_username(self):
-        if self.nick:
-            return self.nick
+        if self.username:
+            return self.username
         return ''
 
     def get_email(self):
