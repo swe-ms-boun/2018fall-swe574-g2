@@ -15,14 +15,12 @@ app = Flask(__name__)
 api = Api(app)
 auth = HTTPBasicAuth()
 
-
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/annotation"
 mongo = PyMongo(app)
 
 USERNAME = "root"
 PASSWORD = "hoodyhu"
-
 
 LOGGER = logging.getLogger()
 
@@ -38,7 +36,7 @@ def sitemap():
 
 
 @app.route('/add/creator', methods=['PUT'])
-#@auth.login_required
+# @auth.login_required
 @validate_form(form=CreatorForm)
 def add_creator(form):
     email = form.data['email']
@@ -48,7 +46,8 @@ def add_creator(form):
         "email": form.data['email'],
         "id": form.data['id'],
         "email_sha1": email_sha1,
-        "home_page": form.data['home_page']
+        "home_page": form.data['home_page'],
+        "created_time": datetime.datetime.now().isoformat()+"Z"
     }
 
     if 'name' in form.data and form.data['name']:
@@ -85,20 +84,28 @@ def get_spesific_creator_by_username(username):
 
 
 @app.route('/add/annotation/', methods=['PUT'])
-#@auth.login_required
+# @auth.login_required
 @validate_form(form=BaseAnnotation)
 def add_annotation(form):
+    #  context of the annotation should be like: https://www.w3.org/ns/anno.jsonld
     mongo_query = {
         "context": form.data['context'],
         "id": form.data['id'],
-        "type": form.data['type']
+        "type": form.data['type'],
+        "created_time": datetime.datetime.now().isoformat()+"Z"
     }
 
     if 'body' in form.data and form.data['body']:
         body_part = form.data['body']
         body_part = json.loads(body_part)
         mongo_query['body'] = {}
-        mongo_query['body']['id'] = body_part['id']
+        try:
+            mongo_query['body']['id'] = body_part['id']
+        except KeyError:
+            jsonify(
+                {'ok': False, 'message': 'If you create a body, you should send id'}), 400
+            return
+
         if 'format' in body_part:
             mongo_query['body']['format'] = body_part['format']
         if 'language' in body_part:
@@ -130,7 +137,13 @@ def add_annotation(form):
         body_part = form.data['target']
         body_part = json.loads(body_part)
         mongo_query['target'] = {}
-        mongo_query['target']['id'] = body_part['id']
+        try:
+            mongo_query['target']['id'] = body_part['id']
+        except KeyError:
+            jsonify(
+                {'ok': False, 'message': 'If you create a target, you should send id'}), 400
+            return
+
         if 'format' in body_part:
             mongo_query['target']['format'] = body_part['format']
         if 'language' in body_part:
@@ -160,15 +173,26 @@ def add_annotation(form):
 
     if 'creator_id' in form.data and form.data['creator_id']:
         user = mongo.db.creator.find_one({"id": form.data['creator_id']})
+        if len(user) == 0:
+            jsonify(
+                {'ok': False, 'message': 'The user does not exist'}), 500
+            return
+
         mongo_query["creator"] = {}
-        mongo_query["creator"]["id"] = user['id']
+
+        check_user_field(mongo_query, user, 'id')
 
         if 'type' in user:
             mongo_query["creator"]["type"] = user['type']
 
-        mongo_query["creator"]["email"] = user['email']
-        mongo_query["creator"]["email_sha1"] = user['email_sha1']
-        mongo_query["creator"]["home_page"] = user['home_page']
+        check_user_field(mongo_query, user, 'email')
+        check_user_field(mongo_query, user, 'email_sha1')
+        check_user_field(mongo_query, user, 'home_page')
+
+        if 'created_date' in user:
+            mongo_query["creator"]["created_date"] = user['created_date']
+        else:
+            mongo_query["creator"]["created_date"] = datetime.datetime.now().isoformat()+"Z"
 
         if 'name' in user:
             mongo_query['creator']['name'] = user['name']
@@ -179,7 +203,15 @@ def add_annotation(form):
         doc = mongo.db.annotation.insert(mongo_query)
         return jsonify({'ok': True, 'message': 'Annotation is created successfully!'}), 200
     except Exception:
-        return jsonify({'ok': False, 'message': 'Ops, annotation could not be created! Talked with awesome team :)'}), 400
+        return jsonify(
+            {'ok': False, 'message': 'Ops, annotation could not be created! Talked with awesome team :)'}), 400
+
+
+def check_user_field(mongo_query, user, field):
+    try:
+        mongo_query["creator"][field] = user[field]
+    except KeyError:
+        raise ('The creator does not have %s, please check it' % field)
 
 
 @app.route('/get/creator/<creator_id>/annotations', methods=['GET'])
@@ -187,7 +219,7 @@ def get_annotations_by_creator(creator_id):
     annotations = mongo.db.annotation.find({"creator.id": creator_id})
     annotation_list = []
     for annotation in annotations:
-        # ObjectID is not JSON serializable so pop the _id.
+        #  ObjectID is not JSON serializable so pop the _id.
         annotation.pop('_id')
         annotation_list.append(annotation)
     if annotations.count():
@@ -198,6 +230,7 @@ def get_annotations_by_creator(creator_id):
             return jsonify({'ok': False, 'message': 'There is no annotation for the user'}), 500
         else:
             return jsonify({'ok': False, 'message': 'You are searching non-exist user annotations'}), 500
+
 
 @app.errorhandler(404)
 def not_found(error):
@@ -218,4 +251,3 @@ def unauthorized():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
