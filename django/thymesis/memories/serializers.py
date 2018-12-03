@@ -4,7 +4,7 @@ from memories import models
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Users
-        fields = ('id', 'firstname', 'lastname', 'user_email', 'user_password')
+        fields = ('id', 'firstname', 'lastname', 'user_email', 'user_password','mobile_number','is_active')
 
 
 class PostsSerializer(serializers.ModelSerializer):

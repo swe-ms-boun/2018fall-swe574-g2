@@ -8,7 +8,7 @@ class Users(models.Model):
     lastname = models.CharField(max_length=50)
     user_email = models.EmailField(max_length=70, unique=True)
     user_password = models.CharField(max_length=50)
-    mobile_number = models.CharField(max_length=10, unique=True)
+    mobile_number = models.CharField(max_length=20, unique=True)
     is_active = models.BooleanField(default=True)
 
 
