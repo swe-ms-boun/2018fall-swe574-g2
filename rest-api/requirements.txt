@@ -1,7 +1,7 @@
 Click==7.0
 Flask==1.0.2
 Flask-HTTPAuth==3.2.4
-ItsDangerous==1.0.0
+ItsDangerous==1.1.0
 Jinja2==2.10
 MarkupSafe==1.0
 Werkzeug==0.14.1
@@ -10,3 +10,4 @@ Flask-PyMongo==2.2.0
 PyLD==1.0.3
 PyYAML==3.13
 requests==2.19.1
+Flask-RESTful==0.3.6
