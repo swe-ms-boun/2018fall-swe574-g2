@@ -65,7 +65,7 @@ def add_creator(form):
 
 @app.route('/get/creator/<id>', methods=['GET'])
 @auth.login_required
-def get_spesific_creator_by_id(id):
+def get_specific_creator_by_id(id):
     user = mongo.db.creator.find_one({"id": id})
     if user:
         return jsonify({'ok': True, 'message': 'User email: ' + user['email']}), 200
@@ -75,7 +75,7 @@ def get_spesific_creator_by_id(id):
 
 @app.route('/get/user/<username>', methods=['GET'])
 @auth.login_required
-def get_spesific_creator_by_username(username):
+def get_specific_creator_by_username(username):
     user = mongo.db.creator.find_one({"username": username})
     if user:
         return jsonify({'ok': True, 'message': 'User email: ' + user['email']}), 200
