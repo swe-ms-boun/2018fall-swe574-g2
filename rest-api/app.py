@@ -16,11 +16,11 @@ api = Api(app)
 auth = HTTPBasicAuth()
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/annotation"
+app.config["MONGO_URI"] = "mongodb://root:hoodyhu2@ds127624.mlab.com:27624/thymesis"
 mongo = PyMongo(app)
 
 USERNAME = "root"
-PASSWORD = "hoodyhu"
+PASSWORD = "hoodyhu2"
 
 LOGGER = logging.getLogger()
 
@@ -66,7 +66,8 @@ def add_creator(form):
 @app.route('/get/creator/<id>', methods=['GET'])
 @auth.login_required
 def get_spesific_creator_by_id(id):
-    user = mongo.db.creator.find_one({"id": id})
+    # TODO: aynı id'li user yaratılmamalı.
+    user = mongo.db.creator.find({"id": id})
     if user:
         return jsonify({'ok': True, 'message': 'User email: ' + user['email']}), 200
     else:
@@ -127,11 +128,11 @@ def add_annotation(form):
                     mongo_query['body']['selector']['start'] = selector_part['start']
                 if "end" in selector_part:
                     mongo_query['body']['selector']['end'] = selector_part['end']
-            elif "type" in selector_part and "rectangle" in selector_part['type']:
+            elif "type" in selector_part:
                 mongo_query['body']['selector']['type'] = selector_part['type']
                 if "value" in selector_part:
-                    # x,y,w,h;20,30,100,100
-                    mongo_query['body']['selector']['value'] = selector_part['value']
+                    # xywh=20,30,100,100
+                    mongo_query['body']['selector']['id'] = selector_part['value']
 
     if 'target' in form.data and form.data['target']:
         body_part = form.data['target']

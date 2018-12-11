@@ -111,8 +111,6 @@ class CreatorForm(BaseForm):
     email = StringField('email', validators=[validators.data_required()])
     email_sha1 = StringField('email_sha1')
     home_page = StringField('home_page', validators=[validators.data_required()])
-    created_time = DateField('created_time', validators=[validators.data_required()])
-    modified_time = DateField('modified_time', validators=[validators.data_required()])
 
     def validate(self):
         """
