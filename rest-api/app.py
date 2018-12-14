@@ -49,7 +49,7 @@ def sitemap():
 
 
 @app.route('/add/creator', methods=['PUT'])
-# @auth.login_required
+# @auth.login_required
 @validate_form(form=CreatorForm)
 def add_creator(form):
     """
@@ -162,8 +162,52 @@ def get_all_creators_email():
     return jsonify({'ok': True, 'message': user_email_dict}), 200
 
 
+@app.route('/update/creator', methods=['POST'])
+# @auth.login_required
+@validate_form(form=UpdateCreatorForm)
+def update_creator_info(form):
+    """
+        This endpoint is used to update or add a user's field.
+        This field adds nick field to the user whose id = 3.
+        In order to update a user field, id field is required.
+        example call:
+            http://thymesis-api.herokuapp.com/update/creator?nick=mehmet.kayaalp92&email=kagan@hotmail.com
+            &id=3&home_page=thymesis.com/mk0730
+    :param form:
+    :return:
+    """
+    id = form.data['id']
+    user = mongo.db.creator.find_one({"id": id})
+    mongo_query = {}
+
+    email = form.data['email']
+    name = form.data['name']
+    nick = form.data['nick']
+    home_page = form.data['home_page']
+
+    if email:
+        mongo_query['email'] = email
+    if name:
+        mongo_query['name'] = name
+    if nick:
+        mongo_query['nick'] = nick
+    if home_page:
+        mongo_query['home_page'] = home_page
+
+    if user:
+        mongo.db.creator.update({'id': id}, {"$set": mongo_query}, upsert=True)
+        return jsonify({'ok': False, 'message': 'User info are updated.'}), 200
+    else:
+        if email and home_page and id:
+            mongo.db.creator.update({'id': id}, {"$set": mongo_query}, upsert=True)
+            return jsonify({'ok': False, 'message': 'Ops, user not found! We created the user with the given info'}), 200
+        else:
+            return jsonify(
+                {'ok': False, 'message': 'Ops, user not found! First create the user'}), 500
+
+
 @app.route('/add/annotation/', methods=['PUT'])
-# @auth.login_required
+@auth.login_required
 @validate_form(form=BaseAnnotation)
 def add_annotation(form):
     """
