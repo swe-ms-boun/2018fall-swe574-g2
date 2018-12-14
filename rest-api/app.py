@@ -34,7 +34,6 @@ CLASS_TYPES = {
 }
 
 
-
 @app.route('/')
 def sitemap():
     """
@@ -179,7 +178,7 @@ def add_annotation(form):
         TextPositionSelector selector should contains start and end numbers.
 
         For an annotation which has a TextPositionSelector, the request:
-            http://thymesis-api.herokuapp.com/add/annotation/?id="http://thymesis.com/annotation/1"&creator_id=1
+            http://thymesis-api.herokuapp.com/add/annotation/?id=http://thymesis.com/annotation/1&creator_id=1
             &target={"type": "Text", "source": "http://example.org/memory1", "selector": {"type": "TextPositionSelector",
             "start": "412", "end": "795"}}
 
@@ -377,6 +376,20 @@ def get_annotations_by_creator(creator_id):
             return jsonify({'ok': False, 'message': 'There is no annotation for the user'}), 500
         else:
             return jsonify({'ok': False, 'message': 'You are searching non-exist user annotations'}), 500
+
+
+@app.route('/delete/annotation/<id>', methods=['DELETE'])
+@auth.login_required
+def delete_specific_annotation(id):
+    """
+        This endpoint enables us to delete a specified annotation by given id.
+        example request: http://thymesis-api.herokuapp.com/delete/annotation/1
+    :param id:
+    :return:
+    """
+    annotation_id = 'http://thymesis.com/annotation/' + id
+    annotation = mongo.db.annotation.delete_one({"id": annotation_id})
+    return jsonify({'ok': True, 'message': "Annotation is deleted"}), 200
 
 
 @app.errorhandler(404)
