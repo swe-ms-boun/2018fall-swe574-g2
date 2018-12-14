@@ -436,6 +436,25 @@ def delete_specific_annotation(id):
     return jsonify({'ok': True, 'message': "Annotation is deleted"}), 200
 
 
+@app.route('/get/annotation/<id>', methods=['GET'])
+@auth.login_required
+def get_annotation_by_id(id):
+    """
+        This endpoint returns an annotation by given id.
+        example call: http://thymesis-api.herokuapp.com//get/annotation/1
+    :param id:
+    :return:
+    """
+    annotation_id = 'http://thymesis.com/annotation/' + id
+    annotation = mongo.db.annotation.find_one({"id": annotation_id})
+    if annotation:
+        # ObjectID is not JSON serializable, so pop it.
+        annotation.pop('_id')
+        return jsonify({'ok': True, 'message': annotation}), 200
+    else:
+        return jsonify({'ok': True, 'message': "There is no annotation with this id: " + annotation_id}), 500
+
+
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
