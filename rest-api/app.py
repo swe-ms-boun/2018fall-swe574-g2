@@ -23,6 +23,8 @@ mongo = PyMongo(app)
 USERNAME = "root"
 PASSWORD = "hoodyhu2"
 
+BASE_URL = 'http://thymesis.com/annotation/'
+
 LOGGER = logging.getLogger()
 
 CLASS_TYPES = {
@@ -89,7 +91,7 @@ def add_creator(form):
         doc = mongo.db.creator.insert(mongo_query)
         return jsonify({'ok': True, 'message': 'Creator created successfully!'}), 200
     except Exception:
-        return jsonify({'ok': False, 'message': 'Ops, creator could not be created! Talked with awesome team :)'}), 400
+        return jsonify({'ok': False, 'message': 'Ops, creator could not be created! Talked with awesome team :)'}), 500
 
 
 @app.route('/get/creator/<id>', methods=['GET'])
@@ -122,7 +124,7 @@ def get_spesific_creator_by_id(id):
         user.pop('_id')
         return jsonify({'ok': True, 'message': user}), 200
     else:
-        return jsonify({'ok': False, 'message': 'Ops, user not found!'}), 500
+        return jsonify({'ok': False, 'message': 'Ops, user not found!'}), 404
 
 
 @app.route('/get/creator/list', methods=['GET'])
@@ -196,14 +198,14 @@ def update_creator_info(form):
 
     if user:
         mongo.db.creator.update({'id': id}, {"$set": mongo_query}, upsert=True)
-        return jsonify({'ok': False, 'message': 'User info are updated.'}), 200
+        return jsonify({'ok': True, 'message': 'User info are updated.'}), 200
     else:
         if email and home_page and id:
             mongo.db.creator.update({'id': id}, {"$set": mongo_query}, upsert=True)
-            return jsonify({'ok': False, 'message': 'Ops, user not found! We created the user with the given info'}), 200
+            return jsonify({'ok': False, 'message': 'Ops, user not found! We created the user with the given info'}), 404
         else:
             return jsonify(
-                {'ok': False, 'message': 'Ops, user not found! First create the user'}), 500
+                {'ok': False, 'message': 'Ops, user not found! First create the user'}), 404
 
 
 @app.route('/add/annotation/', methods=['PUT'])
@@ -251,7 +253,7 @@ def add_annotation(form):
                 mongo_query['body']['id'] = body_part['source']
             except KeyError:
                 return jsonify(
-                    {'ok': False, 'message': 'If you create a body, you should send id'}), 400
+                    {'ok': False, 'message': 'If you create a body, you should send id'}), 500
 
         if 'format' in body_part:
             mongo_query['body']['format'] = body_part['format']
@@ -311,7 +313,7 @@ def add_annotation(form):
                 mongo_query['target']['id'] = body_part['source']
             except KeyError:
                 return jsonify(
-                    {'ok': False, 'message': 'If you create a target, you should send id'}), 400
+                    {'ok': False, 'message': 'If you create a target, you should send id'}), 500
 
         if 'format' in body_part:
             mongo_query['target']['format'] = body_part['format']
@@ -371,7 +373,7 @@ def add_annotation(form):
         if len(user) == 0:
             return jsonify(
                 {'ok': False,
-                 'message': 'The user does not exist. Please check user id: ' + form.data['creator_id']}), 500
+                 'message': 'The user does not exist. Please check user id: ' + form.data['creator_id']}), 404
 
         mongo_query["creator"] = {}
 
@@ -417,9 +419,9 @@ def get_annotations_by_creator(creator_id):
     else:
         user = mongo.db.creator.find_one({"id": creator_id})
         if user:
-            return jsonify({'ok': False, 'message': 'There is no annotation for the user'}), 500
+            return jsonify({'ok': True, 'message': 'There is no annotation for the user'}), 404
         else:
-            return jsonify({'ok': False, 'message': 'You are searching non-exist user annotations'}), 500
+            return jsonify({'ok': False, 'message': 'You are searching non-exist user annotations'}), 404
 
 
 @app.route('/delete/annotation/<id>', methods=['DELETE'])
@@ -431,7 +433,7 @@ def delete_specific_annotation(id):
     :param id:
     :return:
     """
-    annotation_id = 'http://thymesis.com/annotation/' + id
+    annotation_id = BASE_URL + id
     annotation = mongo.db.annotation.delete_one({"id": annotation_id})
     return jsonify({'ok': True, 'message': "Annotation is deleted"}), 200
 
@@ -445,14 +447,14 @@ def get_annotation_by_id(id):
     :param id:
     :return:
     """
-    annotation_id = 'http://thymesis.com/annotation/' + id
+    annotation_id = BASE_URL + id
     annotation = mongo.db.annotation.find_one({"id": annotation_id})
     if annotation:
         # ObjectID is not JSON serializable, so pop it.
         annotation.pop('_id')
         return jsonify({'ok': True, 'message': annotation}), 200
     else:
-        return jsonify({'ok': True, 'message': "There is no annotation with this id: " + annotation_id}), 500
+        return jsonify({'ok': False, 'message': "There is no annotation with this id: " + annotation_id}), 500
 
 
 @app.errorhandler(404)
