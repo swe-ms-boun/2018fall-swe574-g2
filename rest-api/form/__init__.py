@@ -111,8 +111,6 @@ class CreatorForm(BaseForm):
     email = StringField('email', validators=[validators.data_required()])
     email_sha1 = StringField('email_sha1')
     home_page = StringField('home_page', validators=[validators.data_required()])
-    created_time = DateField('created_time', validators=[validators.data_required()])
-    modified_time = DateField('modified_time', validators=[validators.data_required()])
 
     def validate(self):
         """
@@ -137,12 +135,16 @@ class BaseAnnotation(BaseForm):
         type: An Annotation must have 1 or more types, and the Annotation class must be one of them.
         body: There should be 1 or more body but may be 0.
         target: There must be 1 or more target relationships
+
+        Normally context, type and created time are required fields.
+        However, we decided to fill them in the API part.
+        context is always https://www.w3.org/ns/anno.jsonld.
+        created time is always now.
+        type is always Annotation.
     """
-    context = StringField('context', default='https://www.w3.org/ns/anno.jsonld',
-                          validators=[validators.data_required()])
+    context = StringField('context', default='https://www.w3.org/ns/anno.jsonld')
     id = StringField('id', validators=[validators.data_required()])
-    type = SelectMultipleField('type', default='Annotation', choices=ANNOTATION_CLASS_TYPES,
-                               validators=[validators.data_required()])
+    type = SelectMultipleField('type', default='Annotation', choices=ANNOTATION_CLASS_TYPES)
     motivation = StringField('motivation')
     created_time = DateTimeField('created_time')
     body = StringField('body')
@@ -156,11 +158,9 @@ class BaseAnnotation(BaseForm):
         """
         res = super(BaseForm, self).validate()
 
-        context = self.context.data
         id = self.id.data
         target = self.target.data
-        type = self.type.data
 
-        if not (context or id or type or target):
-            raise ValueError("context, id, type and target fields must be filled.")
+        if not (id or target):
+            raise ValueError("id and target fields must be filled.")
         return res

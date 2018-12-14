@@ -6,11 +6,12 @@ from django.db import models
 class Users(models.Model):
     firstname = models.CharField(max_length=50)
     lastname = models.CharField(max_length=50)
+    username = models.CharField(max_length=50, null=True, blank=True)
+    home_page = models.CharField(max_length=100, null=True, blank=True)
     user_email = models.EmailField(max_length=70, unique=True)
     user_password = models.CharField(max_length=50)
     mobile_number = models.CharField(max_length=20, unique=True)
     is_active = models.BooleanField(default=True)
-
 
 
 class Posts(models.Model):
@@ -21,7 +22,7 @@ class Posts(models.Model):
     post_body = models.CharField(max_length=3000)
     post_datetime = models.DateTimeField(auto_now_add=True)
     votes = models.IntegerField()
-
+    location = models.CharField(max_length=200)
 
 
 class Comments(models.Model):
@@ -30,8 +31,3 @@ class Comments(models.Model):
     comment_body = models.CharField(max_length = 200)
     Comments_datetime = models.DateTimeField(auto_now_add=True)
 
-
-
-
-
-    
