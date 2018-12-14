@@ -164,3 +164,27 @@ class BaseAnnotation(BaseForm):
         if not (id or target):
             raise ValueError("id and target fields must be filled.")
         return res
+
+
+class UpdateCreatorForm(BaseForm):
+    """
+    """
+    id = StringField('id', validators=[validators.data_required()])
+    type = SelectMultipleField('type', choices=AGENT_CHOICES, default="person")
+    name = StringField('name')
+    nick = StringField('nick')
+    email = StringField('email')
+    email_sha1 = StringField('email_sha1')
+    home_page = StringField('home_page')
+
+    def validate(self):
+        """
+            This method is used to validate required information are valid / provided or not.
+        :return:
+        """
+        res = super(BaseForm, self).validate()
+        id = self.id.data
+
+        if not id:
+            raise ValueError("id field at least one must be filled.")
+        return res
