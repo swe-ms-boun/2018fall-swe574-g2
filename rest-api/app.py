@@ -209,7 +209,7 @@ def update_creator_info(form):
 
 
 @app.route('/add/annotation/', methods=['PUT'])
-@auth.login_required
+#@auth.login_required
 @validate_form(form=BaseAnnotation)
 def add_annotation(form):
     """
@@ -443,7 +443,7 @@ def delete_specific_annotation(id):
 def get_annotation_by_id(id):
     """
         This endpoint returns an annotation by given id.
-        example call: http://thymesis-api.herokuapp.com//get/annotation/1
+        example call: http://thymesis-api.herokuapp.com/get/annotation/1
     :param id:
     :return:
     """
@@ -455,6 +455,29 @@ def get_annotation_by_id(id):
         return jsonify({'ok': True, 'message': annotation}), 200
     else:
         return jsonify({'ok': False, 'message': "There is no annotation with this id: " + annotation_id}), 500
+
+
+@app.route('/get/annotations/<ids>', methods=['GET'])
+@auth.login_required
+def get_annotation_by_ids(ids):
+    """
+        This endpoint is written to get multiple annotations of different ids.
+        This endpoint should be used when calling a memory's annotations.
+        example call: http://thymesis-api.herokuapp.com/get/annotations/1278
+        1278 -> is the ids. ID 1, ID 2, ID 7 and ID 8.
+        When a memory has 4 different annotations whose ids are 1,2,7 and 8, this endpoint should be called.
+    :param ids:
+    :return:
+    """
+    annotation_dict = dict()
+    for id in ids:
+        annotation_id = BASE_URL + id
+        annotation = mongo.db.annotation.find_one({"id": annotation_id})
+        if annotation:
+            #  ObjectID is not JSON serializable, so pop it.
+            annotation.pop('_id')
+            annotation_dict[annotation['id']] = annotation
+    return jsonify({'ok': True, 'message': annotation_dict}), 200
 
 
 @app.errorhandler(404)
