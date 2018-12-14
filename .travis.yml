@@ -5,3 +5,5 @@ before_install:
   - cd rest-api
 install:
   - pip install -r requirements.txt
+script:
+  - echo "skipping tests"
