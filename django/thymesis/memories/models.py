@@ -18,7 +18,7 @@ class Users(models.Model):
 
 class Posts(models.Model):
     post_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
     uri = models.CharField(max_length=45)
     title = models.CharField(max_length = 20)
     summary = models.CharField(max_length=30)
@@ -30,8 +30,8 @@ class Posts(models.Model):
 
 class Comments(models.Model):
     comment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    post_id = models.ForeignKey(Posts, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
     comment_body = models.CharField(max_length = 200)
     Comments_datetime = models.DateTimeField(auto_now_add=True)
 

@@ -4,6 +4,7 @@ from .models import Users, Posts, Comments
 from .serializers import UsersSerializer, PostsSerializer, CommentsSerializer
 from rest_framework.response import Response
 from rest_framework.views import status
+from .models import Users
 #import requests
 
 
@@ -29,7 +30,7 @@ class ListCreatePostsView(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         a_Post = Posts.objects.create(
-            user_id=request.data["user_id"],
+            user_id=request.data["user"],
             title=request.data["title"],
             location=request.data["location"],
             summary=request.data["summary"],

@@ -12,10 +12,10 @@ class PostsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Posts
-        fields = ('post_id', 'user_id', 'uri', 'location', 'title', 'summary', 'post_body', 'post_datetime', 'votes')
+        fields = ('post_id', 'user', 'uri', 'location', 'title', 'summary', 'post_body', 'post_datetime', 'votes')
 
 
 class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Comments
-        fields = ('comment_id', 'post_id', 'user_id', 'comment_body', 'comment_datetime')
+        fields = ('comment_id', 'post', 'user', 'comment_body', 'comment_datetime')
