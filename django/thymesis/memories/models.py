@@ -1,9 +1,11 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 
 
 class Users(models.Model):
+    user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     firstname = models.CharField(max_length=50)
     lastname = models.CharField(max_length=50)
     username = models.CharField(max_length=50, null=True, blank=True)
@@ -12,9 +14,10 @@ class Users(models.Model):
     user_password = models.CharField(max_length=50)
     mobile_number = models.CharField(max_length=20, unique=True)
     is_active = models.BooleanField(default=True)
-
+    
 
 class Posts(models.Model):
+    post_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     uri = models.CharField(max_length=45)
     title = models.CharField(max_length = 20)
@@ -23,9 +26,10 @@ class Posts(models.Model):
     post_datetime = models.DateTimeField(auto_now_add=True)
     votes = models.IntegerField()
     location = models.CharField(max_length=200)
-
+    
 
 class Comments(models.Model):
+    comment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     post_id = models.ForeignKey(Posts, on_delete=models.CASCADE)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     comment_body = models.CharField(max_length = 200)
