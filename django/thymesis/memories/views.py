@@ -4,7 +4,7 @@ from .models import Users, Posts, Comments
 from .serializers import UsersSerializer, PostsSerializer, CommentsSerializer
 from rest_framework.response import Response
 from rest_framework.views import status
-import requests
+#import requests
 
 
 # Create your views here.
@@ -61,14 +61,15 @@ class ListCreateUsersView(generics.ListCreateAPIView):
             
         )
 
-        response = requests.put('http://127.0.0.1:5000/add/creator', data={'email': request.data["user_email"],
-                                                     'name': request.data["firstname"],
-                                                     'nick': request.data["username"],
-                                                     'home_page': request.data["home_page"],
-                                                     'type': 'person',
-                                                     'id': 89
-                                                     }
-                                 )
+        #This shall be uncommented when deploying the prototype
+        #response = requests.put('http://127.0.0.1:5000/add/creator', data={'email': request.data["user_email"],
+         #                                            'name': request.data["firstname"],
+          #                                           'nick': request.data["username"],
+           #                                          'home_page': request.data["home_page"],
+            #                                         'type': 'person',
+             #                                        'id': 89
+              #                                       }
+               #                  )
 
         return Response(
             data=UsersSerializer(a_User).data,
