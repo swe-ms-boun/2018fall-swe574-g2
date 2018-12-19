@@ -244,9 +244,19 @@ def add_annotation(form):
     mongo_query = {
         "context": "https://www.w3.org/ns/anno.jsonld",
         "id": form.data['id'],
-        "type": "Annotation",
         "created_time": datetime.datetime.now().isoformat() + "Z"
     }
+
+    if 'type' in form.data['type']:
+        # If a user wants to add type, it is allowed to add type. However, only accepted field is Annotation.
+        if "Annotation" in form.data['type']:
+            mongo_query['type'] = form.data['type']
+        else:
+            return jsonify(
+                {'ok': False, 'message': 'Type should be Anntation. Not something else.'}), 500
+    else:
+        # It is required field and its default field is Annotation
+        mongo_query['type'] = "Annotation"
 
     # Body part is optional.
     if 'body' in form.data and form.data['body']:
