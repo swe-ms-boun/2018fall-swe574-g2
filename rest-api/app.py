@@ -27,6 +27,12 @@ BASE_URL = 'http://thymesis.com/annotation/'
 
 LOGGER = logging.getLogger()
 
+AGENT_CHOICES = (
+    ("person", "Person"),
+    ("organization", "Organization"),
+    ("software", "Software"),
+)
+
 CLASS_TYPES = {
     'video': 'Video',
     'image': 'Image',
@@ -369,7 +375,6 @@ def add_annotation(form):
     # So actually there should be a creator_id for our case although it is not required in annotation model.
     if 'creator_id' in form.data and form.data['creator_id']:
         user = mongo.db.creator.find_one({"id": form.data['creator_id']})
-        print(user)
         if len(user) == 0:
             return jsonify(
                 {'ok': False,
@@ -388,10 +393,50 @@ def add_annotation(form):
         #  Check optional fields whether exists or not and if so write them.
         if 'type' in user:
             mongo_query["creator"]["type"] = user['type']
+        else:
+            # By default, type is "Person" in the application.
+            mongo_query["creator"]["type"] = 'Person'
+
         if 'name' in user:
             mongo_query['creator']['name'] = user['name']
         if 'nick' in user:
             mongo_query['creator']['nick'] = user['nick']
+    # creator is not required for an annotation.
+    elif 'creator' in form.data and form.data['creator']:
+        # This part will not be used in our application.
+        # However, when a user called our API, it has to be called.
+        mongo_query['creator'] = {}
+        creator_part = form.data['creator']
+        if 'id' in creator_part:
+            mongo_query['creator']['id'] = creator_part['id']
+        else:
+            return jsonify({'ok': True, 'message': 'Agent type should have an id'}), 500
+
+        if 'type' in creator_part:
+            try:
+                mongo_query['creator']['type'] = AGENT_CHOICES[creator_part['type'].lower()]
+            except KeyError:
+                return jsonify({'ok': True, 'message': 'Agent type should be software, person or an organization'}), 500
+            except AttributeError:
+                return jsonify({'ok': True, 'message': 'Agent type should be string'}), 500
+        else:
+            return jsonify({'ok': True, 'message': 'Agent type should have a type'}), 500
+
+        if 'name' in creator_part:
+            mongo_query['creator']['name'] = creator_part['name']
+
+        if 'nickname' in creator_part:
+            mongo_query['creator']['nickname'] = creator_part['nickname']
+
+        if 'email' in creator_part:
+            mongo_query['creator']['email'] = creator_part['email']
+        else:
+            return jsonify({'ok': True, 'message': 'Agent type should have an email'}), 500
+
+        if 'homepage' in creator_part:
+            mongo_query['creator']['homepage'] = creator_part['homepage']
+        else:
+            return jsonify({'ok': True, 'message': 'Agent should have a homepage'}), 500
 
     try:
         doc = mongo.db.annotation.insert(mongo_query)
