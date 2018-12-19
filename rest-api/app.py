@@ -23,7 +23,8 @@ mongo = PyMongo(app)
 USERNAME = "root"
 PASSWORD = "hoodyhu2"
 
-BASE_URL = 'http://thymesis.com/annotation/'
+ANNOTATION_BASE_URL = 'http://thymesis.com/annotation/'
+MEMORYY_BASE_URL = 'http://thymesis.com/memory/'
 
 LOGGER = logging.getLogger()
 
@@ -433,7 +434,7 @@ def delete_specific_annotation(id):
     :param id:
     :return:
     """
-    annotation_id = BASE_URL + id
+    annotation_id = ANNOTATION_BASE_URL + id
     annotation = mongo.db.annotation.delete_one({"id": annotation_id})
     return jsonify({'ok': True, 'message': "Annotation is deleted"}), 200
 
@@ -447,7 +448,7 @@ def get_annotation_by_id(id):
     :param id:
     :return:
     """
-    annotation_id = BASE_URL + id
+    annotation_id = ANNOTATION_BASE_URL + id
     annotation = mongo.db.annotation.find_one({"id": annotation_id})
     if annotation:
         # ObjectID is not JSON serializable, so pop it.
@@ -471,12 +472,35 @@ def get_annotation_by_ids(ids):
     """
     annotation_dict = dict()
     for id in ids:
-        annotation_id = BASE_URL + id
+        annotation_id = ANNOTATION_BASE_URL + id
         annotation = mongo.db.annotation.find_one({"id": annotation_id})
         if annotation:
             #  ObjectID is not JSON serializable, so pop it.
             annotation.pop('_id')
             annotation_dict[annotation['id']] = annotation
+    return jsonify({'ok': True, 'message': annotation_dict}), 200
+
+
+@app.route('/get/annotation/target/<id>', methods=['GET'])
+@auth.login_required
+def get_annotation_by_target_id(id):
+    """
+        This endpoint is written to get annotations from a target id.
+        This endpoint should be used when calling a memory's annotations.
+        When calling memory whose id is 1, called below request to get its annotations
+        example call: http://thymesis-api.herokuapp.com//get/annotation/target/1
+    :param id:
+    :return:
+    """
+    annotation_dict = dict()
+    annotation_id = MEMORYY_BASE_URL + id
+    annotation_list = mongo.db.annotation.find({"target.id": annotation_id})
+    count = 0
+    for annotation in annotation_list:
+        #  ObjectID is not JSON serializable, so pop it.
+        annotation.pop('_id')
+        annotation_dict[count] = annotation
+        count = count + 1
     return jsonify({'ok': True, 'message': annotation_dict}), 200
 
 
