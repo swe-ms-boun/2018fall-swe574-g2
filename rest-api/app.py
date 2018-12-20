@@ -23,9 +23,16 @@ mongo = PyMongo(app)
 USERNAME = "root"
 PASSWORD = "hoodyhu2"
 
-BASE_URL = 'http://thymesis.com/annotation/'
+ANNOTATION_BASE_URL = 'http://thymesis.com/annotation/'
+MEMORYY_BASE_URL = 'http://thymesis.com/memory/'
 
 LOGGER = logging.getLogger()
+
+AGENT_CHOICES = (
+    ("person", "Person"),
+    ("organization", "Organization"),
+    ("software", "Software"),
+)
 
 CLASS_TYPES = {
     'video': 'Video',
@@ -237,9 +244,19 @@ def add_annotation(form):
     mongo_query = {
         "context": "https://www.w3.org/ns/anno.jsonld",
         "id": form.data['id'],
-        "type": "Annotation",
         "created_time": datetime.datetime.now().isoformat() + "Z"
     }
+
+    if 'type' in form.data['type']:
+        # If a user wants to add type, it is allowed to add type. However, only accepted field is Annotation.
+        if "Annotation" in form.data['type']:
+            mongo_query['type'] = form.data['type']
+        else:
+            return jsonify(
+                {'ok': False, 'message': 'Type should be Anntation. Not something else.'}), 500
+    else:
+        # It is required field and its default field is Annotation
+        mongo_query['type'] = "Annotation"
 
     # Body part is optional.
     if 'body' in form.data and form.data['body']:
@@ -369,7 +386,6 @@ def add_annotation(form):
     # So actually there should be a creator_id for our case although it is not required in annotation model.
     if 'creator_id' in form.data and form.data['creator_id']:
         user = mongo.db.creator.find_one({"id": form.data['creator_id']})
-        print(user)
         if len(user) == 0:
             return jsonify(
                 {'ok': False,
@@ -388,10 +404,50 @@ def add_annotation(form):
         #  Check optional fields whether exists or not and if so write them.
         if 'type' in user:
             mongo_query["creator"]["type"] = user['type']
+        else:
+            # By default, type is "Person" in the application.
+            mongo_query["creator"]["type"] = 'Person'
+
         if 'name' in user:
             mongo_query['creator']['name'] = user['name']
         if 'nick' in user:
             mongo_query['creator']['nick'] = user['nick']
+    # creator is not required for an annotation.
+    elif 'creator' in form.data and form.data['creator']:
+        # This part will not be used in our application.
+        # However, when a user called our API, it has to be called.
+        mongo_query['creator'] = {}
+        creator_part = form.data['creator']
+        if 'id' in creator_part:
+            mongo_query['creator']['id'] = creator_part['id']
+        else:
+            return jsonify({'ok': True, 'message': 'Agent type should have an id'}), 500
+
+        if 'type' in creator_part:
+            try:
+                mongo_query['creator']['type'] = AGENT_CHOICES[creator_part['type'].lower()]
+            except KeyError:
+                return jsonify({'ok': True, 'message': 'Agent type should be software, person or an organization'}), 500
+            except AttributeError:
+                return jsonify({'ok': True, 'message': 'Agent type should be string'}), 500
+        else:
+            return jsonify({'ok': True, 'message': 'Agent type should have a type'}), 500
+
+        if 'name' in creator_part:
+            mongo_query['creator']['name'] = creator_part['name']
+
+        if 'nickname' in creator_part:
+            mongo_query['creator']['nickname'] = creator_part['nickname']
+
+        if 'email' in creator_part:
+            mongo_query['creator']['email'] = creator_part['email']
+        else:
+            return jsonify({'ok': True, 'message': 'Agent type should have an email'}), 500
+
+        if 'homepage' in creator_part:
+            mongo_query['creator']['homepage'] = creator_part['homepage']
+        else:
+            return jsonify({'ok': True, 'message': 'Agent should have a homepage'}), 500
 
     try:
         doc = mongo.db.annotation.insert(mongo_query)
@@ -433,7 +489,7 @@ def delete_specific_annotation(id):
     :param id:
     :return:
     """
-    annotation_id = BASE_URL + id
+    annotation_id = ANNOTATION_BASE_URL + id
     annotation = mongo.db.annotation.delete_one({"id": annotation_id})
     return jsonify({'ok': True, 'message': "Annotation is deleted"}), 200
 
@@ -447,7 +503,7 @@ def get_annotation_by_id(id):
     :param id:
     :return:
     """
-    annotation_id = BASE_URL + id
+    annotation_id = ANNOTATION_BASE_URL + id
     annotation = mongo.db.annotation.find_one({"id": annotation_id})
     if annotation:
         # ObjectID is not JSON serializable, so pop it.
@@ -471,12 +527,35 @@ def get_annotation_by_ids(ids):
     """
     annotation_dict = dict()
     for id in ids:
-        annotation_id = BASE_URL + id
+        annotation_id = ANNOTATION_BASE_URL + id
         annotation = mongo.db.annotation.find_one({"id": annotation_id})
         if annotation:
             #  ObjectID is not JSON serializable, so pop it.
             annotation.pop('_id')
             annotation_dict[annotation['id']] = annotation
+    return jsonify({'ok': True, 'message': annotation_dict}), 200
+
+
+@app.route('/get/annotation/target/<id>', methods=['GET'])
+@auth.login_required
+def get_annotation_by_target_id(id):
+    """
+        This endpoint is written to get annotations from a target id.
+        This endpoint should be used when calling a memory's annotations.
+        When calling memory whose id is 1, called below request to get its annotations
+        example call: http://thymesis-api.herokuapp.com//get/annotation/target/1
+    :param id:
+    :return:
+    """
+    annotation_dict = dict()
+    annotation_id = MEMORYY_BASE_URL + id
+    annotation_list = mongo.db.annotation.find({"target.id": annotation_id})
+    count = 0
+    for annotation in annotation_list:
+        #  ObjectID is not JSON serializable, so pop it.
+        annotation.pop('_id')
+        annotation_dict[count] = annotation
+        count = count + 1
     return jsonify({'ok': True, 'message': annotation_dict}), 200
 
 
