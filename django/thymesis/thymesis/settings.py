@@ -40,9 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'memories',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'thymesis.urls'
@@ -79,9 +82,9 @@ WSGI_APPLICATION = 'thymesis.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'xbsgypgg' ,
-        'USER': 'xbsgypgg',
-        'PASSWORD': 'BRPgq1tPzIPd5QOjvXQrMfCVv6ORuSpw',
+        'NAME': 'yjrlffvm' ,
+        'USER': 'yjrlffvm',
+        'PASSWORD': 'T8UMx1UGQtrOsb-LeaxataUuSZMYAz19',
         'HOST': 'stampy.db.elephantsql.com',
         'PORT': '5432'
     }
@@ -128,3 +131,6 @@ STATIC_URL = '/static/'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+# CORS Config
+CORS_ORIGIN_ALLOW_ALL = True
