@@ -13,3 +13,4 @@ pytest
 flask_restful
 requests==2.20.0
 Flask-RESTful==0.3.6
+gunicorn==19.9.0
