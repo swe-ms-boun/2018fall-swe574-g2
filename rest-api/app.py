@@ -9,6 +9,7 @@ from decorator import validate_form
 import hashlib
 import json
 from utils import *
+from config import *
 
 import logging
 
@@ -16,12 +17,15 @@ app = Flask(__name__)
 api = Api(app)
 auth = HTTPBasicAuth()
 
+MONGO_URI = CONFIG.get('MONGO_URI')
+USERNAME = CONFIG.get('USERNAME')
+PASSWORD = CONFIG.get('PASSWORD')
+
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://root:hoodyhu2@ds127624.mlab.com:27624/thymesis"
+
+app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
 
-USERNAME = "root"
-PASSWORD = "hoodyhu2"
 
 ANNOTATION_BASE_URL = 'http://thymesis.com/annotation/'
 MEMORYY_BASE_URL = 'http://thymesis.com/memory/'
