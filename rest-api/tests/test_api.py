@@ -172,7 +172,20 @@ def test_check_get_creator_by_id_unknown_user(client):
     rv = client.get('/get/creator/66')
     assert '404' in rv.status
 
+
+def test_check_get_creator_by_id_with_string_id(client):
+    # Test fails. Issue opened.
+    rv = client.get('/get/creator/adana')
+    assert '404' in rv.status
+
+
 # Test get/creator/list/ endpoint
+def test_check_get_all_creators(client):
+    rv = client.get('/get/creator/list')
+    assert '200' in rv.status
+
+
+# Test update/creator endpoint
 
 
 def test_check_creator_get(client):
