@@ -186,6 +186,13 @@ def test_check_get_all_creators(client):
 
 
 # Test update/creator endpoint
+def test_check_update_creator(client):
+    rv = client.post('/updaet/creator', data=dict(
+        nick='mk0730',
+        email='mehmet.kayaalp@boun.edu.tr',
+        id=3,
+    ), follow_redirects=True)
+    assert "200" in rv.status
 
 
 def test_check_creator_get(client):
