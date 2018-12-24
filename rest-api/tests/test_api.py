@@ -142,6 +142,39 @@ def test_check_add_creator_invalid_homepage(client):
     assert b'Ops, creator could not be created!' in rv.data
 
 
+# get_spesific_creator_by_id tests.
+def test_check_get_creator_by_id(client):
+    rv = client.get('/get/creator/1')
+    assert '200' in rv.status
+
+
+def test_check_get_creator_by_id_created_time(client):
+    rv = client.get('/get/creator/1')
+    assert 'created_time' in rv.data
+
+
+def test_check_get_creator_by_id_email(client):
+    rv = client.get('/get/creator/1')
+    assert 'email' in rv.data
+
+
+def test_check_get_creator_by_id_email_sha1(client):
+    rv = client.get('/get/creator/1')
+    assert 'email_sha1' in rv.data
+
+
+def test_check_get_creator_by_id_home_page(client):
+    rv = client.get('/get/creator/1')
+    assert 'home_page' in rv.data
+
+
+def test_check_get_creator_by_id_unknown_user(client):
+    rv = client.get('/get/creator/66')
+    assert '404' in rv.status
+
+# Test get/creator/list/ endpoint
+
+
 def test_check_creator_get(client):
     rv = client.get('/add/creator/1', follow_redirects=True)
 
