@@ -209,7 +209,7 @@ def update_creator_info(form):
     else:
         if email and home_page and id:
             mongo.db.creator.update({'id': id}, {"$set": mongo_query}, upsert=True)
-            return jsonify({'ok': False, 'message': 'Ops, user not found! We created the user with the given info'}), 404
+            return jsonify({'ok': False, 'message': 'Ops, user not found! We created the user with the given info'}), 200
         else:
             return jsonify(
                 {'ok': False, 'message': 'Ops, user not found! First create the user'}), 404
