@@ -62,6 +62,7 @@ def test_check_available_url_get_annotation_by_target_id(client):
     assert b'/get/annotation/target/<id>' in rv.data
 
 
+# Add creator tests
 def test_check_add_creator_with_post(client):
     rv = client.post('/add/creator', json={
         'email': 'test@gmail.com'
@@ -110,9 +111,35 @@ def test_check_add_creator_already(client):
     ), follow_redirects=True)
     assert b'Ops, this email is already taken' in rv.data
 
-# Different options should be written like instead of writing email, write int.
-# Instead of writing int id, write string ...
-# get_spesific_creator_by_id methods should be written.
+
+def test_check_add_creator_string_id(client):
+    # Failed. User created with string id "a". Issue opened
+    rv = client.put('/add/creator', data=dict(
+        email='test@gmail.com',
+        home_page='home_page',
+        id='a',
+    ), follow_redirects=True)
+    assert b'Ops, creator could not be created!' in rv.data
+
+
+def test_check_add_creator_invalid_email(client):
+    # Failed. User created with invalid email address "test". Issue opened
+    rv = client.put('/add/creator', data=dict(
+        email='test',
+        home_page='home_page',
+        id=3,
+    ), follow_redirects=True)
+    assert b'Ops, creator could not be created!' in rv.data
+
+
+def test_check_add_creator_invalid_homepage(client):
+    # Failed. User created with invalid homepage "home_page". Issue opened
+    rv = client.put('/add/creator', data=dict(
+        email='test',
+        home_page='home_page',
+        id=3,
+    ), follow_redirects=True)
+    assert b'Ops, creator could not be created!' in rv.data
 
 
 def test_check_creator_get(client):
