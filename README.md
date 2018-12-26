@@ -1,7 +1,7 @@
 # :grinning: Welcome to Thymesis - Living History Project!
 
 [![Build Status](https://travis-ci.org/swe-ms-boun/2018fall-swe574-g2.svg?branch=master)](https://travis-ci.org/swe-ms-boun/2018fall-swe574-g2)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9d8c4694e2224ed19030d7d7ef2ae9bf)](https://www.codacy.com/app/yasserkabbout/2018fall-swe574-g2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=swe-ms-boun/2018fall-swe574-g2&amp;utm_campaign=Badge_Grade)
+
 
 <p align="center"><img height="350" width="350" src="http://i67.tinypic.com/v2uv82.png" border="0" alt="Image and video hosting by TinyPic"></p>
 
