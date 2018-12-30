@@ -186,6 +186,76 @@ def test_check_get_all_creators(client):
 
 
 # Test update/creator endpoint
+def test_check_update_creator_add_nick(client):
+    rv = client.post('/update/creator', data=dict(
+        nick='mk0730',
+        email='mehmet.kayaalp@boun.edu.tr',
+        id=3,
+    ), follow_redirects=True)
+    assert "200" in rv.status
+
+
+def test_check_update_creator_change_email(client):
+    rv = client.post('/update/creator', data=dict(
+        email='mehmet.kayaalp@ozu.edu.tr',
+        id=3,
+    ), follow_redirects=True)
+    assert "200" in rv.status
+
+
+def test_check_update_creator_change_email(client):
+    rv = client.post('/update/creator', data=dict(
+        home_page='http://thymesis.com/mk0730',
+        id=3,
+    ), follow_redirects=True)
+    assert "200" in rv.status
+
+
+def test_check_update_creator_change_email_sha1(client):
+    # When changing email, the sha1 should also be change.
+    # This is wrong and should be changed.
+    # Issue opened.
+    rv = client.post('/update/creator', data=dict(
+        home_page='http://thymesis.com/mk0730',
+        id=3,
+    ), follow_redirects=True)
+    assert "200" in rv.status
+
+
+def test_check_update_unknown_creator_without_email(client):
+    # Yasser user does not exist now.
+    rv = client.post('/update/creator', data=dict(
+        home_page='http://thymesis.com/yasser',
+        id=10,
+    ), follow_redirects=True)
+    assert "404" in rv.status
+
+
+def test_check_update_unknown_creator_without_id(client):
+    # Yasser user does not exist now.
+    rv = client.post('/update/creator', data=dict(
+        home_page='http://thymesis.com/yasser',
+        email="yasser@gmail.com"
+    ), follow_redirects=True)
+    assert "404" in rv.status
+
+
+def test_check_update_unknown_creator_without_home_page(client):
+    #  Yasser user does not exist now.
+    rv = client.post('/update/creator', data=dict(
+        id=10,
+        email="yasser@gmail.com"
+    ), follow_redirects=True)
+    assert "404" in rv.status
+
+
+def test_check_update_unknown_creator_with_all_new_info(client):
+    rv = client.post('/update/creator', data=dict(
+        home_page='http://thymesis.com/yasser',
+        id=10,
+        email="yasser@gmail.com"
+    ), follow_redirects=True)
+    assert "200" in rv.status
 
 
 def test_check_creator_get(client):
@@ -200,3 +270,6 @@ def test_check_user_unauthorized_access(client):
 
     print(rv.data)
     assert b'"error":"Unauthorized access"' in rv.data
+
+
+# add annotation tests will be written
