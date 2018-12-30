@@ -10,6 +10,7 @@ import hashlib
 import json
 from utils import *
 from config import *
+from validate_email import validate_email
 
 import logging
 
@@ -77,6 +78,10 @@ def add_creator(form):
     :return:
     """
     email = form.data['email']
+
+    is_valid = validate_email(email)
+    if not is_valid:
+        return jsonify({'ok': False, 'message': 'The email is not in a valid format.'}), 500
 
     is_email_exist = mongo.db.creator.find_one({"email": email})
     if is_email_exist:
@@ -194,11 +199,15 @@ def update_creator_info(form):
     mongo_query = {}
 
     email = form.data['email']
+
     name = form.data['name']
     nick = form.data['nick']
     home_page = form.data['home_page']
 
     if email:
+        is_valid = validate_email(email)
+        if not is_valid:
+            return jsonify({'ok': False, 'message': 'The email is not in a valid format.'}), 500
         mongo_query['email'] = email
     if name:
         mongo_query['name'] = name

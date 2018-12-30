@@ -13,3 +13,4 @@ pytest
 requests==2.20.0
 Flask-RESTful==0.3.6
 gunicorn==19.9.0
+validate-email==1.3
