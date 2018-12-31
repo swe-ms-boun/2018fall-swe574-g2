@@ -28,7 +28,7 @@ app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
 
 ANNOTATION_BASE_URL = 'http://thymesis.com/annotation/'
-MEMORYY_BASE_URL = 'http://thymesis.com/memory/'
+MEMORY_BASE_URL = 'http://thymesis.com/memory/'
 
 LOGGER = logging.getLogger()
 
@@ -135,7 +135,7 @@ def add_creator(form):
 
 
 @app.route('/get/creator/<id>', methods=['GET'])
-@auth.login_required
+# @auth.login_required
 def get_spesific_creator_by_id(id):
     """
         This endpoint returns the information of the user by the given id.
@@ -168,7 +168,7 @@ def get_spesific_creator_by_id(id):
 
 
 @app.route('/get/creator/list', methods=['GET'])
-@auth.login_required
+# @auth.login_required
 def get_all_creators_email():
     """
         this endpoint returns the list of all saved user's email addresses.
@@ -279,8 +279,8 @@ def add_annotation(form):
 
         For an annotation which has a TextPositionSelector, the request:
             http://thymesis-api.herokuapp.com/add/annotation/?id=http://thymesis.com/annotation/1&creator_id=1&
-            body: "http://example.org/review1"&target={"type": "Text", "source": "http://example.org/memory1",
-            "selector": {"type": "TextPositionSelector", "start": "412", "end": "795"}}
+            body: "http://example.org/review1"&target={"id": "a68b7e33-598d-4d7a-86f4-d94123bbc621", "type": "Text",
+            source": "http://example.org/memory1", "selector": {"type": "TextPositionSelector", "start": "412", "end": "795"}}
 
         For annotation which target is directly id with selected image's xywh;
                 https://www.w3.org/TR/annotation-model/#segments-of-external-resources the request can be:
@@ -421,7 +421,10 @@ def add_annotation(form):
             body_part = json.loads(body_part)
             mongo_query['target'] = {}
             try:
-                mongo_query['target']['id'] = body_part['id']
+                target_id = body_part['id']
+                if not check_url_valid(target_id):
+                    target_id = MEMORY_BASE_URL + target_id
+                mongo_query['target']['id'] = str(target_id)
             except KeyError:
                 try:
                     mongo_query['target']['id'] = body_part['source']
@@ -447,8 +450,6 @@ def add_annotation(form):
                 mongo_query['target']['text_direction'] = body_part['text_direction']
             if 'processing_language' in body_part:
                 mongo_query['target']['processing_language'] = body_part['processing_language']
-            if 'id' in body_part:
-                mongo_query['target']['id'] = body_part['id']
 
             if 'purpose' in body_part:
                 # describing, tagging, assessing, bookmarking, classifying, commenting...
@@ -612,7 +613,7 @@ def get_annotations_by_creator(creator_id):
 
 
 @app.route('/delete/annotation/<id>', methods=['DELETE'])
-@auth.login_required
+# @auth.login_required
 def delete_specific_annotation(id):
     """
         This endpoint enables us to delete a specified annotation by given id.
@@ -626,7 +627,7 @@ def delete_specific_annotation(id):
 
 
 @app.route('/get/annotation/<id>', methods=['GET'])
-@auth.login_required
+# @auth.login_required
 def get_annotation_by_id(id):
     """
         This endpoint returns an annotation by given id.
@@ -645,7 +646,7 @@ def get_annotation_by_id(id):
 
 
 @app.route('/get/annotations/<ids>', methods=['GET'])
-@auth.login_required
+# @auth.login_required
 def get_annotation_by_ids(ids):
     """
         This endpoint is written to get multiple annotations of different ids.
@@ -668,18 +669,22 @@ def get_annotation_by_ids(ids):
 
 
 @app.route('/get/annotation/target/<id>', methods=['GET'])
-@auth.login_required
+# @auth.login_required
 def get_annotation_by_target_id(id):
     """
         This endpoint is written to get annotations from a target id.
         This endpoint should be used when calling a memory's annotations.
         When calling memory whose id is 1, called below request to get its annotations
-        example call: http://thymesis-api.herokuapp.com//get/annotation/target/1
+        example call: http://thymesis-api.herokuapp.com/get/annotation/target/a68b7e33-598d-4d7a-86f4-d94123bbc621
     :param id:
     :return:
     """
     annotation_dict = dict()
-    annotation_id = MEMORYY_BASE_URL + id
+    if not check_url_valid(id):
+        annotation_id = MEMORY_BASE_URL + id
+    else:
+        annotation_id = id
+
     annotation_list = mongo.db.annotation.find({"target.id": annotation_id})
     count = 0
     for annotation in annotation_list:
