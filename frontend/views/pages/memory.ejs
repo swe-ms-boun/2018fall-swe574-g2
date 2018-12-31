@@ -1,0 +1,46 @@
+<div class="card border-primary mb-3">
+<div class="card-header"><h4><%= memory.title %></h4></div>
+<div class="card-body">
+  <p class="card-text"><i><%= memory.summary %></i></p>
+  <p class="card-text"><%= memory.body %></p>
+</div>
+  <div class="card-footer text-muted">
+  created <%= memory.datetime %> by <%= memory.user %> from <%= memory.location %>
+  <% if (typeof user !== 'undefined') { %>
+  <a href="/annotate/<%=memory.post_id%>"><button class="btn btn-warning my-2 my-sm-0 float-right">Annotate</button></a>
+  <% } %>
+</div>
+</div>
+
+<div class="card border-primary mb-3">
+<div class="card-header"><h4>Comments</h4></div>
+<div class="card-body">
+  
+    <% if (comments.length > 0) { %>
+
+    <ul class="list-group">
+    <% comments.forEach((comment) => { %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+        <p><%= comment.body %></p>
+        <span class="badge badge-primary badge-pill">by <%=comment.user%></span>
+    </li>
+    <% }) %>
+    </ul>
+
+    <% } else { %>
+    <p>No comments!</p>
+    <% } %>
+</div>
+<% if (typeof user !== 'undefined') { %>
+<div class="card-footer text-muted">
+    <form action="/comment/new" method="get">
+    <form>
+    <input type="text" class="form-control" placeholder="Write your comment..." name="comment">
+    <input type="hidden" name="post" value="<%= memory.post_id %>">
+    <input type="hidden" name="user" value="<%= user.user_id %>">
+    <button class="btn btn-info my-2 my-sm-0" type="submit">Submit</button>
+    </form>
+</div>
+<% } %>
+  
+</div>

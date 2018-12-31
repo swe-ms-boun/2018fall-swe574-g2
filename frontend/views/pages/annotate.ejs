@@ -1,0 +1,88 @@
+<style>
+* {
+  box-sizing: border-box;
+}
+.highlighted {
+  background-color: rgba(255, 255, 120, 0.5);
+  outline: 0.1px solid rgba(255, 100, 0, 0.8);
+}
+#debug {
+  display: none;
+  color: #666;
+  background: #f8f8f8;
+  padding: 2em;
+  height: 19.3em;
+  overflow-y: scroll;
+  resize: vertical;
+}
+#debug.error {
+  color: red;
+}
+#selectable {
+  display: inline-block;
+  padding: 1em;
+  line-height: 1.4em;
+  font-size: 18px;
+  font-family: sans-serif;
+  border: 1px solid lightgrey;
+}
+
+#corpus {
+  display: inline-block;
+  padding: 1em;
+  line-height: 1.4em;
+  font-size: 18px;
+  font-family: sans-serif;
+  border: 1px solid lightgrey;
+}
+
+a[href^="#selector"]:before {
+  content: '📌';
+  font-size: 75%
+}
+</style>
+
+<div class="card border-primary mb-3">
+<div class="card-header"><h4>Annotate post</h4></div>
+<div class="card-body">
+  <p class="card-text"><i>Select the piece you would like to annotate:</i></p>
+  Select here: <p class="card-text" id="selectable"><%= memory.body %></p>
+  <br>
+  Preview: <p id="corpus"><%= memory.body %></p>
+  <pre id="debug"></pre>
+
+  <form>
+
+<div class="form-group">
+    <textarea class="form-control" name="body" placeholder="Annotation text" rows="3"></textarea>
+</div>
+
+<button onClick="buttonClicked()" class="btn btn-info my-2 my-sm-0" type="reset">Submit Annotation</button>
+
+</form>
+
+</div>
+
+
+
+  <div class="card-footer text-muted">
+  created <%= memory.datetime %> by <%= memory.user %> from <%= memory.location %>
+</div>
+
+</div>
+
+<script src="/optionaljs/annotation.js"></script>
+
+<script>
+function buttonClicked() {
+  let selection = JSON.parse(document.getElementById("debug").innerText).exact;
+  let start = document.getElementById("corpus").innerText.indexOf(selection);
+  let end = selection.length + start;
+  let id = '/memory/<%=memory.post_id%>';
+  let target = `{"type":"Text","source":"/memory/<%=memory.post_id%>","selector":{"type":"TextPositionSelector","start":"${start}","end":"${end}"}}`
+  let url = `/annotate/new?id=${id}&target=${target}`
+  console.log(url)
+  window.location.href = url;
+  return false;
+}
+</script>

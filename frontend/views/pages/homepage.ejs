@@ -1,0 +1,25 @@
+<!--
+This is your default homepage.
+For more information, see:
+• https://sailsjs.com/documentation/concepts/views
+• https://sailsjs.com/documentation/concepts/routes
+-->
+
+<div class="jumbotron">
+  <center><h1>Thymesis</h1></center>
+  <br>
+  <% posts.forEach((memory) => { %>
+    <div class="card border-primary mb-3">
+    <div class="card-header">
+      <a href="/memory/<%=memory.post_id%>"><h4><%= memory.title %></h4></a>
+    </div>
+    <div class="card-body">
+      <p class="card-text"><%= memory.summary %></p>
+    </div>
+      <div class="card-footer text-muted">
+      created on <%= memory.datetime %> by <%= memory.user %> from <%= memory.location %>
+    </div>
+  </div>
+  <% }) %>
+
+</div>
