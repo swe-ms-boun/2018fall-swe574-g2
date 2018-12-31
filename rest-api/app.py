@@ -26,7 +26,6 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
 
-
 ANNOTATION_BASE_URL = 'http://thymesis.com/annotation/'
 MEMORYY_BASE_URL = 'http://thymesis.com/memory/'
 
@@ -47,6 +46,23 @@ CLASS_TYPES = {
 }
 
 
+MOTIVATION_TYPES = {
+    'assessing': 'assessing',
+    'bookmarking': 'bookmarking',
+    'classifying': 'classifying',
+    'commenting': 'commenting',
+    'describing': 'describing',
+    'editing': 'editing',
+    'highlighting': 'highlighting',
+    'identifying': 'identifying',
+    'linking': 'linking',
+    'moderating': 'moderating',
+    'questioning': 'questioning',
+    'replying': 'replying',
+    'tagging': 'tagging'
+}
+
+
 @app.route('/')
 def sitemap():
     """
@@ -62,7 +78,7 @@ def sitemap():
 
 
 @app.route('/add/creator', methods=['PUT'])
-# @auth.login_required
+#  @auth.login_required
 @validate_form(form=CreatorForm)
 def add_creator(form):
     """
@@ -176,7 +192,7 @@ def get_all_creators_email():
 
 
 @app.route('/update/creator', methods=['POST'])
-# @auth.login_required
+#  @auth.login_required
 @validate_form(form=UpdateCreatorForm)
 def update_creator_info(form):
     """
@@ -213,14 +229,15 @@ def update_creator_info(form):
     else:
         if email and home_page and id:
             mongo.db.creator.update({'id': id}, {"$set": mongo_query}, upsert=True)
-            return jsonify({'ok': False, 'message': 'Ops, user not found! We created the user with the given info'}), 200
+            return jsonify(
+                {'ok': False, 'message': 'Ops, user not found! We created the user with the given info'}), 200
         else:
             return jsonify(
                 {'ok': False, 'message': 'Ops, user not found! First create the user'}), 404
 
 
 @app.route('/add/annotation/', methods=['PUT'])
-#@auth.login_required
+# @auth.login_required
 @validate_form(form=BaseAnnotation)
 def add_annotation(form):
     """
@@ -235,9 +252,17 @@ def add_annotation(form):
         TextPositionSelector selector should contains start and end numbers.
 
         For an annotation which has a TextPositionSelector, the request:
-            http://thymesis-api.herokuapp.com/add/annotation/?id=http://thymesis.com/annotation/1&creator_id=1
-            &target={"type": "Text", "source": "http://example.org/memory1", "selector": {"type": "TextPositionSelector",
-            "start": "412", "end": "795"}}
+            http://thymesis-api.herokuapp.com/add/annotation/?id=http://thymesis.com/annotation/1&creator_id=1&
+            body: "http://example.org/review1"&target={"type": "Text", "source": "http://example.org/memory1",
+            "selector": {"type": "TextPositionSelector", "start": "412", "end": "795"}}
+
+        For annotation which target is directly id with selected image's xywh;
+                https://www.w3.org/TR/annotation-model/#segments-of-external-resources the request can be:
+                Look at example 4: IRIs with Fragment Components:
+            http://thymesis-api.herokuapp.com/add/annotation/?id=http://thymesis.com/annotation/2&creator_id=1&
+            body: "http://example.org/description1"&target={"type": "Image", "format": "image/jpeg",
+            "id": "http://example.com/image1#xywh=100,100,300,300"}
+
 
         TODO: For an annotation which has FragmentSelector, the request'll be written.
 
@@ -252,142 +277,213 @@ def add_annotation(form):
     }
 
     if 'type' in form.data['type']:
-        # If a user wants to add type, it is allowed to add type. However, only accepted field is Annotation.
+        #  If a user wants to add type, it is allowed to add type. However, only accepted field is Annotation.
         if "Annotation" in form.data['type']:
             mongo_query['type'] = form.data['type']
         else:
             return jsonify(
                 {'ok': False, 'message': 'Type should be Anntation. Not something else.'}), 500
     else:
-        # It is required field and its default field is Annotation
+        #  It is required field and its default field is Annotation
         mongo_query['type'] = "Annotation"
 
-    # Body part is optional.
+    #  Body part is optional.
     if 'body' in form.data and form.data['body']:
         body_part = form.data['body']
-        body_part = json.loads(body_part)
-        mongo_query['body'] = {}
         try:
-            mongo_query['body']['id'] = body_part['id']
-        except KeyError:
+            body_part = json.loads(body_part)
+            mongo_query['body'] = {}
             try:
-                mongo_query['body']['id'] = body_part['source']
+                mongo_query['body']['id'] = body_part['id']
             except KeyError:
-                return jsonify(
-                    {'ok': False, 'message': 'If you create a body, you should send id'}), 500
+                try:
+                    mongo_query['body']['id'] = body_part['source']
+                except KeyError:
+                    return jsonify(
+                        {'ok': False, 'message': 'If you create a body, you should send id'}), 500
 
-        if 'format' in body_part:
-            mongo_query['body']['format'] = body_part['format']
-        if 'language' in body_part:
-            mongo_query['body']['language'] = body_part['language']
+            if 'purpose' in body_part:
+                # describing, tagging, assessing, bookmarking, classifying, commenting...
+                motivation = body_part['purpose']
+                try:
+                    mongo_query['body']['purpose'] = MOTIVATION_TYPES[motivation]
+                except KeyError:
+                    return jsonify({'ok': False, 'message': 'Motivation is not valid'}), 500
 
-        # type of the model are certain. There are only specific options listed below.
-        # If the type is not one of them, since it is not a required field, log it and pass it.
-        if 'type' in body_part:
-            type = body_part['type'].lower()
-            try:
-                mongo_query['body']['type'] = CLASS_TYPES[type]
-            except KeyError:
-                LOGGER.warning("Specified type is wrong. Check the type: " + type)
+            if 'motivation' in body_part:
+                # describing, tagging, assessing, bookmarking, classifying, commenting...
+                motivation = body_part['motivation']
+                try:
+                    mongo_query['body']['motivation'] = MOTIVATION_TYPES[motivation]
+                except KeyError:
+                    return jsonify({'ok': False, 'message': 'Motivation is not valid'}), 500
 
-        if 'text_direction' in body_part:
-            mongo_query['body']['text_direction'] = body_part['text_direction']
-        if 'processing_language' in body_part:
-            mongo_query['body']['processing_language'] = body_part['processing_language']
-        if 'id' in body_part:
-            mongo_query['target']['id'] = body_part['id']
+            if 'format' in body_part:
+                mongo_query['body']['format'] = body_part['format']
+            if 'language' in body_part:
+                mongo_query['body']['language'] = body_part['language']
 
-        if 'selector' in body_part:
-            mongo_query['body']['selector'] = {}
-            selector_part = body_part['selector']
-            #  Type is required for a selector.
-            if "type" in selector_part:
-                if 'TextPositionSelector' in selector_part['type']:
-                    mongo_query['body']['selector']['type'] = 'TextPositionSelector'
-                    if "start" in selector_part and 'end' in selector_part:
-                        try:
-                            #  Check start and end can be convertable to int or gave error.
-                            start = int(selector_part['start'])
-                            end = int(selector_part['end'])
-                            mongo_query['body']['selector']['start'] = start
-                            mongo_query['body']['selector']['end'] = end
-                        except ValueError:
-                            jsonify({'ok': False,
-                                     'message': 'Start and end should number.'}), 500
-                    else:
-                        jsonify({'ok': False,
-                                 'message': 'For TextPosition type selector, start and end field should be exist.'}), 500
+            #  type of the model are certain. There are only specific options listed below.
+            #  If the type is not one of them, since it is not a required field, log it and pass it.
+            if 'type' in body_part:
+                type = body_part['type'].lower()
+                try:
+                    mongo_query['body']['type'] = CLASS_TYPES[type]
+                except KeyError:
+                    LOGGER.warning("Specified type is wrong. Check the type: " + type)
+
+            if 'text_direction' in body_part:
+                mongo_query['body']['text_direction'] = body_part['text_direction']
+            if 'processing_language' in body_part:
+                mongo_query['body']['processing_language'] = body_part['processing_language']
+            if 'id' in body_part:
+                mongo_query['body']['id'] = body_part['id']
+
+            if 'selector' in body_part:
+                mongo_query['body']['selector'] = {}
+                selector_part = body_part['selector']
+                #  Type is required for a selector.
+                if "type" in selector_part:
+                    if 'TextPositionSelector' in selector_part['type']:
+                        mongo_query['body']['selector']['type'] = 'TextPositionSelector'
+                        if "start" in selector_part and 'end' in selector_part:
+                            try:
+                                #  Check start and end can be convertable to int or gave error.
+                                start = int(selector_part['start'])
+                                end = int(selector_part['end'])
+                                mongo_query['body']['selector']['start'] = start
+                                mongo_query['body']['selector']['end'] = end
+                            except ValueError:
+                                return jsonify({'ok': False,
+                                                'message': 'Start and end should number.'}), 500
+                        else:
+                            return jsonify({'ok': False,
+                                            'message': 'For TextPosition type selector, '
+                                                       'start and end field should be exist.'}), 500
+                    elif 'FragmentSelector' in selector_part['type']:
+                        mongo_query['body']['selector']['type'] = 'FragmentSelector'
+                        if 'conformsTo' in selector_part and "value" in selector_part:
+                            # http://www.w3.org/TR/media-frags/
+                            mongo_query['body']['selector']['conformsTo'] = selector_part["conformsTo"]
+                            # xywh=50,50,640,480
+                            mongo_query['body']['selector']['value'] = selector_part["value"]
+                else:
+                    return jsonify({'ok': False,
+                                    'message': 'The type is missing for selector part. Selector part accepts either '
+                                               'TextPositionSelector and FragmentSelector.'}), 500
+        except ValueError:
+            if '{' not in body_part:
+                #  Body part can be directly a string like body: http://example.org/review1
+                if check_url_valid(body_part):
+                    mongo_query['body'] = body_part
+                else:
+                    return jsonify({'ok': False, 'message': 'Body url is not valid.'}), 500
             else:
-                jsonify({'ok': False,
-                         'message': 'The type is missing for selector part. Selector part accepts either '
-                                    'TextPositionSelector and TextPositionSelector.'}), 500
+                return jsonify({'ok': False, 'message': 'For body part the json format is not valid.'}), 500
+        except Exception as e:
+            return jsonify({'ok': False, 'message': e.message}), 500
 
     #  Target is a required field so there is no option to not have a target field.
     if 'target' in form.data and form.data['target']:
         body_part = form.data['target']
-        body_part = json.loads(body_part)
-        mongo_query['target'] = {}
         try:
-            mongo_query['target']['id'] = body_part['id']
-        except KeyError:
+            body_part = json.loads(body_part)
+            mongo_query['target'] = {}
             try:
-                mongo_query['target']['id'] = body_part['source']
+                mongo_query['target']['id'] = body_part['id']
             except KeyError:
-                return jsonify(
-                    {'ok': False, 'message': 'If you create a target, you should send id'}), 500
+                try:
+                    mongo_query['target']['id'] = body_part['source']
+                except KeyError:
+                    return jsonify(
+                        {'ok': False, 'message': 'If you create a target, you should send id'}), 500
 
-        if 'format' in body_part:
-            mongo_query['target']['format'] = body_part['format']
-        if 'language' in body_part:
-            mongo_query['target']['language'] = body_part['language']
+            if 'format' in body_part:
+                mongo_query['target']['format'] = body_part['format']
+            if 'language' in body_part:
+                mongo_query['target']['language'] = body_part['language']
 
-        # type of the model are certain. There are only specific options listed below.
-        # If the type is not one of them, since it is not a required field, log it and pass it.
-        if 'type' in body_part:
-            type = body_part['type'].lower()
-            try:
-                mongo_query['target']['type'] = CLASS_TYPES[type]
-            except KeyError:
-                LOGGER.warning("Specified type is wrong. Check the type: " + type)
+            #  type of the model are certain. There are only specific options listed below.
+            #  If the type is not one of them, since it is not a required field, log it and pass it.
+            if 'type' in body_part:
+                type = body_part['type'].lower()
+                try:
+                    mongo_query['target']['type'] = CLASS_TYPES[type]
+                except KeyError:
+                    LOGGER.warning("Specified type is wrong. Check the type: " + type)
 
-        if 'text_direction' in body_part:
-            mongo_query['target']['text_direction'] = body_part['text_direction']
-        if 'processing_language' in body_part:
-            mongo_query['target']['processing_language'] = body_part['processing_language']
-        if 'id' in body_part:
-            mongo_query['target']['id'] = body_part['id']
+            if 'text_direction' in body_part:
+                mongo_query['target']['text_direction'] = body_part['text_direction']
+            if 'processing_language' in body_part:
+                mongo_query['target']['processing_language'] = body_part['processing_language']
+            if 'id' in body_part:
+                mongo_query['target']['id'] = body_part['id']
 
-        if 'selector' in body_part:
-            mongo_query['target']['selector'] = {}
-            selector_part = body_part['selector']
-            #  Type is required for a selector.
-            if "type" in selector_part:
-                if 'TextPositionSelector' in selector_part['type']:
-                    mongo_query['target']['selector']['type'] = "TextPositionSelector"
-                    #  Check start and end exists. If type is TextPositionSelector, start and end fields are required.
-                    if "start" in selector_part and 'end' in selector_part:
-                        try:
-                            #  Check start and end can be convertable to int or gave error.
-                            start = int(selector_part['start'])
-                            end = int(selector_part['end'])
-                            mongo_query['target']['selector']['start'] = start
-                            mongo_query['target']['selector']['end'] = end
-                        except ValueError:
+            if 'purpose' in body_part:
+                # describing, tagging, assessing, bookmarking, classifying, commenting...
+                motivation = body_part['purpose']
+                try:
+                    mongo_query['target']['purpose'] = MOTIVATION_TYPES[motivation]
+                except KeyError:
+                    return jsonify({'ok': False, 'message': 'Purpose is not valid'}), 500
+
+            if 'motivation' in body_part:
+                # describing, tagging, assessing, bookmarking, classifying, commenting...
+                motivation = body_part['motivation']
+                try:
+                    mongo_query['target']['motivation'] = MOTIVATION_TYPES[motivation]
+                except KeyError:
+                    return jsonify({'ok': False, 'message': 'Motivation is not valid'}), 500
+
+            if 'selector' in body_part:
+                mongo_query['target']['selector'] = {}
+                selector_part = body_part['selector']
+                #  Type is required for a selector.
+                if "type" in selector_part:
+                    if 'TextPositionSelector' in selector_part['type']:
+                        mongo_query['target']['selector']['type'] = "TextPositionSelector"
+                        # Check start and end exists.
+                        # If type is TextPositionSelector, start and end fields are required.
+                        if "start" in selector_part and 'end' in selector_part:
+                            try:
+                                #  Check start and end can be convertable to int or gave error.
+                                start = int(selector_part['start'])
+                                end = int(selector_part['end'])
+                                mongo_query['target']['selector']['start'] = start
+                                mongo_query['target']['selector']['end'] = end
+                            except ValueError:
+                                jsonify({'ok': False,
+                                         'message': 'Start and end should number.'}), 500
+                        else:
                             jsonify({'ok': False,
-                                     'message': 'Start and end should number.'}), 500
-                    else:
-                        jsonify({'ok': False,
-                                 'message': 'For TextPosition type selector, start and end field should be exist.'}), 500
-
+                                     'message': 'For TextPosition type selector, start and end field should be exist.'}), 500
+                    elif 'FragmentSelector' in selector_part['type']:
+                        mongo_query['target']['selector']['type'] = 'FragmentSelector'
+                        if 'conformsTo' in selector_part and "value" in selector_part:
+                            # http://www.w3.org/TR/media-frags/
+                            mongo_query['target']['selector']['conformsTo'] = selector_part["conformsTo"]
+                            # xywh=50,50,640,480
+                            mongo_query['target']['selector']['value'] = selector_part["value"]
+                else:
+                    return jsonify({'ok': False,
+                                    'message': 'The type is missing for selector part. Selector part accepts either '
+                                               'TextPositionSelector and FragmentSelector.'}), 500
+        except ValueError:
+            if '{' not in body_part:
+                #  Target part can be directly a string.
+                if check_url_valid(body_part):
+                    mongo_query['target'] = body_part
+                else:
+                    return jsonify({'ok': False, 'message': 'Target url is not valid.'}), 500
             else:
-                jsonify({'ok': False,
-                         'message': 'The type is missing for selector part. Selector part accepts either '
-                                    'TextPositionSelector and TextPositionSelector.'}), 500
+                return jsonify({'ok': False, 'message': 'For target part the json format is not valid.'}), 500
+        except Exception as e:
+            return jsonify({'ok': False, 'message': e.message}), 500
 
-    # creator id is not required field for anonymous users if exists.
-    # DECISION: For our case, for now, anonymous user cannot be exist
+    #  creator id is not required field for anonymous users if exists.
+    #  DECISION: For our case, for now, anonymous user cannot be exist
     # because only logged in users can be create annotation.
-    # So actually there should be a creator_id for our case although it is not required in annotation model.
+    #  So actually there should be a creator_id for our case although it is not required in annotation model.
     if 'creator_id' in form.data and form.data['creator_id']:
         user = mongo.db.creator.find_one({"id": form.data['creator_id']})
         if len(user) == 0:
@@ -409,17 +505,17 @@ def add_annotation(form):
         if 'type' in user:
             mongo_query["creator"]["type"] = user['type']
         else:
-            # By default, type is "Person" in the application.
+            #  By default, type is "Person" in the application.
             mongo_query["creator"]["type"] = 'Person'
 
         if 'name' in user:
             mongo_query['creator']['name'] = user['name']
         if 'nick' in user:
             mongo_query['creator']['nick'] = user['nick']
-    # creator is not required for an annotation.
+    #  creator is not required for an annotation.
     elif 'creator' in form.data and form.data['creator']:
-        # This part will not be used in our application.
-        # However, when a user called our API, it has to be called.
+        #  This part will not be used in our application.
+        #  However, when a user called our API, it has to be called.
         mongo_query['creator'] = {}
         creator_part = form.data['creator']
         if 'id' in creator_part:
@@ -510,7 +606,7 @@ def get_annotation_by_id(id):
     annotation_id = ANNOTATION_BASE_URL + id
     annotation = mongo.db.annotation.find_one({"id": annotation_id})
     if annotation:
-        # ObjectID is not JSON serializable, so pop it.
+        #  ObjectID is not JSON serializable, so pop it.
         annotation.pop('_id')
         return jsonify({'ok': True, 'message': annotation}), 200
     else:
