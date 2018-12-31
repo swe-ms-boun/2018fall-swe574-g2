@@ -123,13 +123,12 @@ def test_check_add_creator_string_id(client):
 
 
 def test_check_add_creator_invalid_email(client):
-    # Failed. User created with invalid email address "test". Issue opened
     rv = client.put('/add/creator', data=dict(
         email='test',
         home_page='home_page',
         id=3,
     ), follow_redirects=True)
-    assert b'Ops, creator could not be created!' in rv.data
+    assert b'The email is not in a valid format.' in rv.data
 
 
 def test_check_add_creator_invalid_homepage(client):
@@ -209,6 +208,15 @@ def test_check_update_creator_change_email(client):
         id=3,
     ), follow_redirects=True)
     assert "200" in rv.status
+
+
+def test_check_update_creator_with_invalid_email(client):
+    rv = client.post('/update/creator', data=dict(
+        home_page='http://thymesis.com/mk0730',
+        id=3,
+        email='deneme',
+    ), follow_redirects=True)
+    assert "500" in rv.status
 
 
 def test_check_update_creator_change_email_sha1(client):
