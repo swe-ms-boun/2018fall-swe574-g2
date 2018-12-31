@@ -78,6 +78,10 @@ def add_creator(form):
     :return:
     """
     email = form.data['email']
+    try:
+        id = int(form.data['id'])
+    except ValueError:
+        return jsonify({'ok': False, 'message': 'The id shoule be an integer format.'}), 500
 
     is_valid = validate_email(email)
     if not is_valid:
@@ -194,7 +198,12 @@ def update_creator_info(form):
     :param form:
     :return:
     """
-    id = form.data['id']
+
+    try:
+        id = int(form.data['id'])
+    except ValueError:
+        return jsonify({'ok': False, 'message': 'The id shoule be an integer format.'}), 500
+
     user = mongo.db.creator.find_one({"id": id})
     mongo_query = {}
 
@@ -253,9 +262,14 @@ def add_annotation(form):
     :param form:
     :return:
     """
+    context = form.data['context']
+
+    if not context:
+        context = "https://www.w3.org/ns/anno.jsonld"
+
     #  context of the annotation should be like: https://www.w3.org/ns/anno.jsonld
     mongo_query = {
-        "context": "https://www.w3.org/ns/anno.jsonld",
+        "context": context,
         "id": form.data['id'],
         "created_time": datetime.datetime.now().isoformat() + "Z"
     }
@@ -266,7 +280,7 @@ def add_annotation(form):
             mongo_query['type'] = form.data['type']
         else:
             return jsonify(
-                {'ok': False, 'message': 'Type should be Anntation. Not something else.'}), 500
+                {'ok': False, 'message': 'Type should be Annotation. Not something else.'}), 500
     else:
         # It is required field and its default field is Annotation
         mongo_query['type'] = "Annotation"
