@@ -88,8 +88,8 @@ def add_creator(form):
         email, id and home_page fields are required fields.
         name and nick fields are optional.
         Example put request:
-            http://thymesis-api.herokuapp.com/add/creator?nick=memed&email=mehmet.kayaalp@boun.edu.tr&id=1&home_page=thymesis.com/memed
-            http://thymesis-api.herokuapp.com/add/creator?email=mehmet.kayaalp@boun.edu.tr&id=1&home_page=thymesis.com/memed
+            http://thymesis-api.herokuapp.com/add/creator?nick=memed&email=mehmet.kayaalp@boun.edu.tr&id=1&home_page=http://thymesis.com/memed
+            http://thymesis-api.herokuapp.com/add/creator?email=mehmet.kayaalp@boun.edu.tr&id=1&home_page=http://thymesis.com/memed
     :param form:
     :return:
     """
@@ -108,6 +108,10 @@ def add_creator(form):
         return jsonify({'ok': False, 'message': 'Ops, this email is already taken.'}), 500
 
     email_sha1 = hashlib.sha1(email).hexdigest()
+
+    home_page = form.data['home_page']
+    if not check_url_valid(home_page):
+        return jsonify({'ok': False, 'message': 'The home page is not in URL format'}), 500
 
     mongo_query = {
         "email": form.data['email'],
@@ -210,7 +214,7 @@ def update_creator_info(form):
         In order to update a user field, id field is required.
         example call:
             http://thymesis-api.herokuapp.com/update/creator?nick=mehmet.kayaalp92&email=kagan@hotmail.com
-            &id=3&home_page=thymesis.com/mk0730
+            &id=3&home_page=http://thymesis.com/mk0730
     :param form:
     :return:
     """
@@ -232,14 +236,18 @@ def update_creator_info(form):
     if email:
         is_valid = validate_email(email)
         if not is_valid:
-            return jsonify({'ok': False, 'message': 'The email is not in a valid format.'}), 500
+            return jsonify({'ok': False, 'message': 'The email is not valid.'}), 500
         mongo_query['email'] = email
+
     if name:
         mongo_query['name'] = name
     if nick:
         mongo_query['nick'] = nick
     if home_page:
-        mongo_query['home_page'] = home_page
+        if check_url_valid(home_page):
+            mongo_query['home_page'] = home_page
+        else:
+            return jsonify({'ok': False, 'message': 'The home page url is not valid.'}), 500
 
     if user:
         mongo.db.creator.update({'id': id}, {"$set": mongo_query}, upsert=True)
