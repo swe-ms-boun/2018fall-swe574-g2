@@ -286,9 +286,10 @@ def add_annotation(form):
                 https://www.w3.org/TR/annotation-model/#segments-of-external-resources the request can be:
                 Look at example 4: IRIs with Fragment Components:
             http://thymesis-api.herokuapp.com/add/annotation/?id=http://thymesis.com/annotation/2&creator_id=1&
-            body: "http://example.org/description1"&target={"type": "Image", "format": "image/jpeg",
-            "id": "http://example.com/image1#xywh=100,100,300,300"}
+            body="http://example.org/description1"&target={"type": "Image", "format": "image/jpeg",
+            "id": "http://example.com/image1%23xywh=100,100,300,300"}
 
+            https://stackoverflow.com/a/23247395/5383769
 
         TODO: For an annotation which has FragmentSelector, the request'll be written.
 
