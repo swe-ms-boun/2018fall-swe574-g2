@@ -304,7 +304,6 @@ def add_annotation(form):
     #  context of the annotation should be like: https://www.w3.org/ns/anno.jsonld
     mongo_query = {
         "context": context,
-        "id": form.data['id'],
         "created_time": datetime.datetime.now().isoformat() + "Z"
     }
 
@@ -582,6 +581,18 @@ def add_annotation(form):
         else:
             return jsonify({'ok': True, 'message': 'Agent should have a homepage'}), 500
 
+    if 'id' in form.data and form.data['id'] != "":
+        mongo_query['id'] = form.data['id']
+    elif 'target' in form.data and 'id' in body_part:
+        if '#' in body_part['id']:
+            splitted_body = body_part['id'].split('#')[0]
+            annotation_number = mongo.db.annotation.count({'target.id': {'$regex': splitted_body}})
+        else:
+            annotation_number = mongo.db.annotation.count({'target.id': {'$regex': body_part['id']}})
+        annotation_number += 1
+        annotation_uri = ANNOTATION_BASE_URL + str(annotation_number)
+        mongo_query['id'] = annotation_uri
+
     try:
         doc = mongo.db.annotation.insert(mongo_query)
         return jsonify({'ok': True, 'message': 'Annotation is created successfully!'}), 200
@@ -686,7 +697,7 @@ def get_annotation_by_target_id(id):
     else:
         annotation_id = id
 
-    annotation_list = mongo.db.annotation.find({"target.id": annotation_id})
+    annotation_list = mongo.db.annotation.find({'target.id': {'$regex': annotation_id}})
     count = 0
     for annotation in annotation_list:
         #  ObjectID is not JSON serializable, so pop it.
