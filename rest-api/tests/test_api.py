@@ -674,3 +674,38 @@ def test_add_annotation_target_dict_fragment_selector_without_value(client):
                 "selector": {"type": "FragmentSelector", "conformsTo": "http://www.w3.org/TR/media-frags/"}},
     ), follow_redirects=True)
     assert "500" in rv.status
+
+
+def test_get_annotations_by_existing_creator(client):
+    rv = client.get('/get/creator/1/annotations', follow_redirects=True)
+    assert "200" in rv.status
+
+
+def test_put_annotations_by_existing_creator(client):
+    rv = client.put('/get/creator/1/annotations', follow_redirects=True)
+    assert "405" in rv.status
+
+
+def test_post_annotations_by_existing_creator(client):
+    rv = client.put('/get/creator/1/annotations', follow_redirects=True)
+    assert "405" in rv.status
+
+
+def test_delete_annotations_by_existing_creator(client):
+    rv = client.delete('/get/creator/1/annotations', follow_redirects=True)
+    assert "405" in rv.status
+
+
+def test_get_annotations_by_existing_creator_2(client):
+    rv = client.get('/get/creator/2/annotations', follow_redirects=True)
+    assert "200" in rv.status
+
+
+def test_get_annotations_by_non_existing_creator(client):
+    rv = client.get('/get/creator/200/annotations', follow_redirects=True)
+    assert b"You are searching non-exist user annotations" in rv.data
+
+
+def test_get_annotations_by_existing_creator_no_annotation(client):
+    rv = client.get('/get/creator/3/annotations', follow_redirects=True)
+    assert b"There is no annotation for the user" in rv.data
