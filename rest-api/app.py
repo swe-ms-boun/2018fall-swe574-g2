@@ -286,9 +286,10 @@ def add_annotation(form):
                 https://www.w3.org/TR/annotation-model/#segments-of-external-resources the request can be:
                 Look at example 4: IRIs with Fragment Components:
             http://thymesis-api.herokuapp.com/add/annotation/?id=http://thymesis.com/annotation/2&creator_id=1&
-            body: "http://example.org/description1"&target={"type": "Image", "format": "image/jpeg",
-            "id": "http://example.com/image1#xywh=100,100,300,300"}
+            body="http://example.org/description1"&target={"type": "Image", "format": "image/jpeg",
+            "id": "http://example.com/image1%23xywh=100,100,300,300"}
 
+            https://stackoverflow.com/a/23247395/5383769
 
         TODO: For an annotation which has FragmentSelector, the request'll be written.
 
@@ -303,7 +304,6 @@ def add_annotation(form):
     #  context of the annotation should be like: https://www.w3.org/ns/anno.jsonld
     mongo_query = {
         "context": context,
-        "id": form.data['id'],
         "created_time": datetime.datetime.now().isoformat() + "Z"
     }
 
@@ -361,7 +361,7 @@ def add_annotation(form):
                 try:
                     mongo_query['body']['type'] = CLASS_TYPES[type]
                 except KeyError:
-                    LOGGER.warning("Specified type is wrong. Check the type: " + type)
+                    return jsonify({'ok': False, 'message': 'Class type is not valid'}), 500
 
             if 'text_direction' in body_part:
                 mongo_query['body']['text_direction'] = body_part['text_direction']
@@ -398,6 +398,10 @@ def add_annotation(form):
                             mongo_query['body']['selector']['conformsTo'] = selector_part["conformsTo"]
                             # xywh=50,50,640,480
                             mongo_query['body']['selector']['value'] = selector_part["value"]
+                        else:
+                            return jsonify({'ok': False,
+                                            'message': 'For FragmentSelector, '
+                                                       'conformsTo and value field should be exist.'}), 500
                 else:
                     return jsonify({'ok': False,
                                     'message': 'The type is missing for selector part. Selector part accepts either '
@@ -444,7 +448,7 @@ def add_annotation(form):
                 try:
                     mongo_query['target']['type'] = CLASS_TYPES[type]
                 except KeyError:
-                    LOGGER.warning("Specified type is wrong. Check the type: " + type)
+                    return jsonify({'ok': False, 'message': 'Class type is not valid'}), 500
 
             if 'text_direction' in body_part:
                 mongo_query['target']['text_direction'] = body_part['text_direction']
@@ -581,6 +585,18 @@ def add_annotation(form):
         else:
             return jsonify({'ok': True, 'message': 'Agent should have a homepage'}), 500
 
+    if 'id' in form.data and form.data['id'] != "":
+        mongo_query['id'] = form.data['id']
+    elif 'target' in form.data and 'id' in body_part:
+        if '#' in body_part['id']:
+            splitted_body = body_part['id'].split('#')[0]
+            annotation_number = mongo.db.annotation.count({'target.id': {'$regex': splitted_body}})
+        else:
+            annotation_number = mongo.db.annotation.count({'target.id': {'$regex': body_part['id']}})
+        annotation_number += 1
+        annotation_uri = ANNOTATION_BASE_URL + str(annotation_number)
+        mongo_query['id'] = annotation_uri
+
     try:
         doc = mongo.db.annotation.insert(mongo_query)
         return jsonify({'ok': True, 'message': 'Annotation is created successfully!'}), 200
@@ -623,7 +639,7 @@ def delete_specific_annotation(id):
     """
     annotation_id = ANNOTATION_BASE_URL + id
     annotation = mongo.db.annotation.delete_one({"id": annotation_id})
-    return jsonify({'ok': True, 'message': "Annotation is deleted"}), 200
+    return jsonify({'ok': True, 'message': "Annotation is deleted if it exists"}), 200
 
 
 @app.route('/get/annotation/<id>', methods=['GET'])
@@ -685,7 +701,7 @@ def get_annotation_by_target_id(id):
     else:
         annotation_id = id
 
-    annotation_list = mongo.db.annotation.find({"target.id": annotation_id})
+    annotation_list = mongo.db.annotation.find({'target.id': {'$regex': annotation_id}})
     count = 0
     for annotation in annotation_list:
         #  ObjectID is not JSON serializable, so pop it.

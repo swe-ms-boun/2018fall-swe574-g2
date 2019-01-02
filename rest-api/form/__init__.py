@@ -143,7 +143,7 @@ class BaseAnnotation(BaseForm):
         type is always Annotation.
     """
     context = StringField('context', default='https://www.w3.org/ns/anno.jsonld')
-    id = StringField('id', validators=[validators.data_required()])
+    id = StringField('id')
     type = SelectMultipleField('type', default='Annotation', choices=ANNOTATION_CLASS_TYPES)
     motivation = StringField('motivation')
     created_time = DateTimeField('created_time')
@@ -158,11 +158,10 @@ class BaseAnnotation(BaseForm):
         """
         res = super(BaseForm, self).validate()
 
-        id = self.id.data
         target = self.target.data
 
-        if not (id or target):
-            raise ValueError("id and target fields must be filled.")
+        if not target:
+            raise ValueError("target field must be filled.")
         return res
 
 

@@ -54,7 +54,7 @@ a[href^="#selector"]:before {
   <form>
 
 <div class="form-group">
-    <textarea class="form-control" name="body" placeholder="Annotation text" rows="3"></textarea>
+    <textarea class="form-control" id="body" name="body" placeholder="Annotation text" rows="3"></textarea>
 </div>
 
 <button onClick="buttonClicked()" class="btn btn-info my-2 my-sm-0" type="reset">Submit Annotation</button>
@@ -77,9 +77,10 @@ a[href^="#selector"]:before {
 function buttonClicked() {
   let selection = JSON.parse(document.getElementById("debug").innerText).exact;
   let start = document.getElementById("corpus").innerText.indexOf(selection);
+  let body = document.getElementById("body").innerText;
   let end = selection.length + start;
   let id = '/memory/<%=memory.post_id%>';
-  let target = `{"type":"Text","source":"/memory/<%=memory.post_id%>","selector":{"type":"TextPositionSelector","start":"${start}","end":"${end}"}}`
+  let target = `{"type":"Text","source":"<%=memory.post_id%>","selector":{"type":"TextPositionSelector","start":"${start}","end":"${end}"}}`
   let url = `/annotate/new?id=${id}&target=${target}`
   console.log(url)
   window.location.href = url;

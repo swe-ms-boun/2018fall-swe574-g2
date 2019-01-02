@@ -30,6 +30,7 @@ module.exports.routes = {
   '/create': 'PostController.create',
   '/memory/:id': 'PostController.page',
   '/annotate/:id': 'PostController.annotate',
+  '/annotateimg/:id': 'PostController.annotateimg',
   '/annotate/new': 'PostController.newanno',
 
 

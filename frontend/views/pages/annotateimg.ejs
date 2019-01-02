@@ -1,0 +1,60 @@
+<div class="card border-primary mb-3">
+<div class="card-header"><h4><%= memory.title %></h4></div>
+<div class="card-body">
+  <% if (memory.image_url !== null) { %>
+    <% if (memory.image_url !== 'none') { %>
+        <img class="annotatable card-img-top" src="<%= memory.image_url %>">
+    <% } %>
+  <% } %>
+  </p>
+  <a href="/memory/<%=memory.post_id%>"><button type="button" class="btn btn-primary">Go back to memory</button></a>
+</div>
+</div>
+
+<script src="/optionaljs/axios.js"></script>
+
+
+<script>
+
+axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) => {
+    console.log(response.data.imageAnnotations);
+    setTimeout(function () {
+        response.data.imageAnnotations.forEach((a) => {
+        anno.addAnnotation({
+            src: '<%=memory.image_url%>',
+            context: window.location.href,
+            text: a.body,
+            shapes: [{
+                type : 'rect',
+                geometry : { x: a.x, y: a.y, width: a.w, height: a.h }
+            }],
+        })
+    }, 1000);   
+})
+}); 
+
+anno.addHandler('onAnnotationCreated', (annotation) => {
+    let data = {
+        id: '<%=memory.post_id%>',
+        body: annotation.text,
+        x: annotation.shapes[0].geometry.x,
+        y: annotation.shapes[0].geometry.y,
+        w: annotation.shapes[0].geometry.width,
+        h: annotation.shapes[0].geometry.height,
+    }
+    console.log(data);
+    axios.post('/post/newimganno?id=<%=memory.post_id%>&body=' + annotation.text 
+    + '&x=' + annotation.shapes[0].geometry.x 
+    + '&y=' + annotation.shapes[0].geometry.y
+    + '&w=' + annotation.shapes[0].geometry.width
+    + '&h=' + annotation.shapes[0].geometry.height
+    ).then((response) => {
+        console.log(response)
+    }).catch((error) => {
+        console.log(error)
+    })
+});
+
+</script>
+
+

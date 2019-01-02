@@ -6,7 +6,7 @@
  */
 
 const axios = require('axios');
-const url = 'https://thymesis-memories-v2.herokuapp.com/api/Users/?format=json';
+const url = 'https://thymesis-memories-v3.herokuapp.com/api/Users/?format=json';
 
 module.exports = {
   

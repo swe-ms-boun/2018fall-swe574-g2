@@ -17,9 +17,21 @@ For more information, see:
       <p class="card-text"><%= memory.summary %></p>
     </div>
       <div class="card-footer text-muted">
-      created on <%= memory.datetime %> by <%= memory.user %> from <%= memory.location %>
+      created <%= memory.datetime %> by <span id="<%=memory.post_id%>" class="badge badge-primary badge-pill"></span> from <a href="https://www.google.com/maps/place/<%= memory.location.replace(':',',')%>">this location.</a>
     </div>
   </div>
   <% }) %>
 
 </div>
+
+<script src="/optionaljs/axios.js"></script>
+
+<script>
+
+<% posts.forEach((memory) => { %>
+  axios.get('http://thymesis-memories-v3.herokuapp.com/api/Users/<%=memory.user%>').then((response) => {
+    document.getElementById('<%=memory.post_id%>').innerText = response.data.username;
+  })
+<% }) %>
+
+</script>
