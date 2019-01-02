@@ -639,7 +639,7 @@ def delete_specific_annotation(id):
     """
     annotation_id = ANNOTATION_BASE_URL + id
     annotation = mongo.db.annotation.delete_one({"id": annotation_id})
-    return jsonify({'ok': True, 'message': "Annotation is deleted"}), 200
+    return jsonify({'ok': True, 'message': "Annotation is deleted if it exists"}), 200
 
 
 @app.route('/get/annotation/<id>', methods=['GET'])

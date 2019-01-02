@@ -709,3 +709,50 @@ def test_get_annotations_by_non_existing_creator(client):
 def test_get_annotations_by_existing_creator_no_annotation(client):
     rv = client.get('/get/creator/3/annotations', follow_redirects=True)
     assert b"There is no annotation for the user" in rv.data
+
+
+def test_delete_annotations_by_existing_id(client):
+    rv = client.delete('/delete/annotation/1', follow_redirects=True)
+    assert "200" in rv.data
+
+
+def test_delete_annotations_by_non_existing_id(client):
+    rv = client.delete('/delete/annotation/1000', follow_redirects=True)
+    assert "200" in rv.data
+
+
+def test_get_annotation_by_existing_id(client):
+    rv = client.get('/get/annotation/1', follow_redirects=True)
+    assert "200" in rv.data
+
+
+def test_get_annotation_by_non_existing_id(client):
+    rv = client.get('/get/annotation/100', follow_redirects=True)
+    assert "500" in rv.data
+
+
+def test_get_annotations_by_existing_ids(client):
+    rv = client.get('/get/annotation/1234', follow_redirects=True)
+    assert "200" in rv.data
+
+
+def test_get_annotations_by_non_existing_ids(client):
+    rv = client.get('/get/annotation/895', follow_redirects=True)
+    assert "200" in rv.data
+
+
+def test_get_annotations_by_two_decimal_ids(client):
+    # when id is 89, it removes 8 and 9.
+    # Issue opened but this endpoint is not used now.
+    rv = client.get('/get/annotation/89', follow_redirects=True)
+    assert "200" in rv.data
+
+
+def test_get_annotations_by_target_id(client):
+    rv = client.get('/get/annotation/target/a68b7e33-598d-4d7a-86f4-d94123bbc621', follow_redirects=True)
+    assert "200" in rv.data
+
+
+def test_get_annotations_by_target_non_exist_id(client):
+    rv = client.get('/get/annotation/target/a68b7e33-598d', follow_redirects=True)
+    assert "200" in rv.data
