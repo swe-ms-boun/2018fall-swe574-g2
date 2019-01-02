@@ -43,16 +43,18 @@ Configuration details will be added by November. Stay tuned!
 
 :dart: **[6. Project Plan](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/6.-Project-Plan)**
 
-:moneybag: **[7. Project Market Analysis]()**
+✅ **[7. Testing](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/7.-Testing)**
 
-:rocket: **[8. Project Complexity Analysis]()**
+:moneybag: **[8. Project Market Analysis]()**
 
-:surfer: **[9. Team SWOT Analysis]()**
+:rocket: **[9. Project Complexity Analysis]()**
 
-:scroll:  **[ 10. Change Request Form]()**
+:surfer: **[10. Team SWOT Analysis]()**
+
+:scroll:  **[ 11. Change Request Form]()**
 
 
-  📑 **[ 11. Git Cheat Sheet](https://github.com/swe-ms-boun/2018fall-swe574-g2/blob/master/PDF%20Files/github-git-cheat-sheet.pdf)**
+  📑 **[ 12. Git Cheat Sheet](https://github.com/swe-ms-boun/2018fall-swe574-g2/blob/master/PDF%20Files/github-git-cheat-sheet.pdf)**
 
 :blue_book: **[A. Meeting Schedule & Notes](https://github.com/swe-ms-boun/2018fall-swe574-g2/wiki/A.-Meetings-Schedule-&-Notes)**
 
