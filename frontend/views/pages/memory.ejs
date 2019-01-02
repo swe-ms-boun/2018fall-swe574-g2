@@ -1,14 +1,30 @@
+<style>
+.fit {
+  max-width: 100%;
+  max-height: 100%;
+}
+</style>
+
 <div class="card border-primary mb-3">
 <div class="card-header"><h4><%= memory.title %></h4></div>
 <div class="card-body">
+  <% if (memory.image_url !== null) { %>
+    <% if (memory.image_url !== 'none') { %>
+        <img class="annotatable fit" src="<%= memory.image_url %>">
+        <% if (typeof user !== 'undefined') { %>
+        <a href="/annotateimg/<%=memory.post_id%>"><button class="btn btn-warning my-2 my-sm-0 float-right">Annotate image</button></a>
+        <% } %>
+    <% } %>
+  <% } %>
   <p class="card-text"><i><%= memory.summary %></i></p>
-  <p class="card-text"><%= memory.body %></p>
+  <p class="card-text"><%= memory.body %>
+  <% if (typeof user !== 'undefined') { %>
+  <a href="/annotate/<%=memory.post_id%>"><button class="btn btn-warning my-2 my-sm-0 float-right">Annotate text</button></a>
+  <% } %>
+  </p>
 </div>
   <div class="card-footer text-muted">
-  created <%= memory.datetime %> by <%= memory.user %> from <%= memory.location %>
-  <% if (typeof user !== 'undefined') { %>
-  <a href="/annotate/<%=memory.post_id%>"><button class="btn btn-warning my-2 my-sm-0 float-right">Annotate</button></a>
-  <% } %>
+  created <%= memory.datetime %> by <span id="<%=memory.post_id%>" class="badge badge-primary badge-pill"></span> from <a href="https://www.google.com/maps/place/<%= memory.location.replace(':',',')%>">this location.</a>
 </div>
 </div>
 
@@ -20,9 +36,10 @@
 
     <ul class="list-group">
     <% comments.forEach((comment) => { %>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
+        <li class="list-group-item align-items-center">
         <p><%= comment.body %></p>
-        <span class="badge badge-primary badge-pill">by <%=comment.user%></span>
+        <span id="<%=comment.comment_id%>" class="badge badge-secondary badge-pill"></span>
+        <span class="badge badge-pill badge-info"><%= comment.datetime %></span>
     </li>
     <% }) %>
     </ul>
@@ -44,3 +61,45 @@
 <% } %>
   
 </div>
+
+
+<script src="/optionaljs/axios.js"></script>
+
+<script>
+
+anno.hideSelectionWidget()
+
+axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) => {
+    console.log(response.data.imageAnnotations);
+    setTimeout(function () {
+        response.data.imageAnnotations.forEach((a) => {
+        anno.addAnnotation({
+            src: '<%=memory.image_url%>',
+            context: window.location.href,
+            text: a.body,
+            shapes: [{
+                type : 'rect',
+                geometry : { x: a.x, y: a.y, width: a.w, height: a.h }
+            }],
+        })
+    }, 1000);   
+})    
+ 
+});
+
+</script>
+
+<script>
+
+  axios.get('http://thymesis-memories-v3.herokuapp.com/api/Users/<%=memory.user%>').then((response) => {
+    document.getElementById('<%=memory.post_id%>').innerText = response.data.username;
+  })
+
+  <% comments.forEach((comment) => { %>
+  axios.get('http://thymesis-memories-v3.herokuapp.com/api/Users/<%=comment.user%>').then((response) => {
+    document.getElementById('<%=comment.comment_id%>').innerText = 'by ' + response.data.username;
+  })
+  <% }) %>
+
+
+</script>

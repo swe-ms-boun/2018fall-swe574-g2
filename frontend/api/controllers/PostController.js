@@ -6,13 +6,26 @@
  */
 
 const axios = require('axios');
-const url = 'https://thymesis-memories-v2.herokuapp.com/api/Posts/'
-const commentUrl = 'https://thymesis-memories-v2.herokuapp.com/api/Comments/'
-const annotationUrl = 'http://thymesis-api.herokuapp.com/add/annotation/'
+const moment = require('moment');
 
-// http://thymesis-api.herokuapp.com/add/annotation/?id=http://thymesis.com/annotation/1&creator_id=1
-//             &target={"type": "Text", "source": "http://example.org/memory1", "selector": {"type": "TextPositionSelector",
-//             "start": "412", "end": "795"}}
+
+const options =
+    { // This is the usual stuff
+    adapter: require('skipper-better-s3')
+    , key: process.env.S3_KEY
+    , secret: process.env.S3_SECRET
+    , bucket: 'thymesis-aws'
+    , region: 'us-east-1'
+    , s3params:
+    { ACL: 'public-read'
+    }
+    , onProgress: progress => sails.log.verbose('Upload progress:', progress)
+    }
+
+
+const url = 'https://thymesis-memories-v3.herokuapp.com/api/Posts/'
+const commentUrl = 'https://thymesis-memories-v3.herokuapp.com/api/Comments/'
+const annotationUrl = 'http://thymesis-api.herokuapp.com/add/annotation/'
 
 module.exports = {
 
@@ -24,7 +37,17 @@ module.exports = {
         });
     },
 
+    upload: (req, res) => {
+        req.file('image').upload(options, (err, filesUploaded) => {
+          if (err) return res.serverError(err);
+          return res.json({ file: filesUploaded[0].extra.Location});
+        });
+      },
+
     new: (req, res) => {
+        console.log(req.query);
+        console.log(req.cookies.user.home_page)
+        console.log(req.cookies.user.user_id)
         if (typeof req.cookies.user !== 'undefined') {
             axios.post(url, {
                 uri: req.cookies.user.home_page,
@@ -32,13 +55,14 @@ module.exports = {
                 summary: req.query.summary,
                 body: req.query.body,
                 location: req.query.lat + ':' + req.query.lng,
-                type: 'text',
+                image_url: req.query.image_url,
                 votes: 0,
                 user: req.cookies.user.user_id,
             }).then((response) => {
-                
+                console.log(response.data);
                 return res.send(response.data);
             }).catch((error) => {
+                console.log(error)
                 return res.send(error);
             });
         } else {
@@ -53,6 +77,7 @@ module.exports = {
         }
         axios.get(url + req.param('id')).then((response) => {
             let memory = response.data;
+            memory.datetime = moment(memory.datetime).startOf('hour').fromNow();
             axios.get(commentUrl).then((resp) => {
                 let comments = [];
                 let allComments = resp.data;
@@ -85,13 +110,36 @@ module.exports = {
         });
     },
 
-    newanno: (req, res) => {
-        axios.put(annotationUrl,{
-            target: req.query.target,
-            id: req.query.id,
+    annotateimg: (req, res) => {
+        if (typeof req.param('id') === 'undefined') {
+            return res.redirect('/')
+        }
+        axios.get(url + req.param('id')).then((response) => {
+            let memory = response.data;
+            return res.view('pages/annotateimg', { memory, user: req.cookies.user });
+        }).catch((error) => {
+            return res.send(error);
+        });
+    },
+
+    newimganno: (req, res) => {
+        let data = {
             creator_id: 1,
-        }).then((response) =>{
-            return res.json(response.data);
+            body: 'http://thymesis.com/' + req.query.body,
+            target: `{type:'Image',format:'image/jpg',id:http://thymesis.com/image%23xywh=${req.query.x},${req.query.y},${req.query.w},${req.query.h}}`
+        }
+        let ur = 'http://thymesis-api.herokuapp.com/add/annotation/?creator_id=1&body=http://example.com/' + req.query.body + '&target={"type":"Image","format":"image/jpg","id":"' + req.query.id + '%23xywh=' + req.query.x + ',' + req.query.y + ',' + req.query.w + ',' + req.query.h + '"}'
+        console.log(ur)
+        axios.put(ur).then((response) => {
+            return res.json(response);
+        }).catch((error) => {
+            return res.json(error);
+        });
+    },
+
+    newanno: (req, res) => {
+        axios.put(`${annotationUrl}?id=${req.query.id}&target=${req.query.target}&creator_1=1`).then((response) => {
+            return res.redirect(req.query.id);
         }).catch((error) => {
             let x = error.data;
             return res.send(x);
@@ -108,6 +156,42 @@ module.exports = {
                 }
             });
             return res.json(userPosts);
+        });
+    },
+
+    getAnnotations: (req, res) => {
+        axios.get('https://thymesis-api.herokuapp.com/get/annotation/target/' + req.query.post_id).then((response) => {
+            let annotations = Object.values(response.data.message);
+            let imageAnnotations = [];
+            let textAnnotations = [];
+            annotations.forEach((annotation) => {
+                if (typeof annotation.target.id !== 'undefined') {
+                    if (annotation.target.type === 'Image') {
+                        let bodyUrl = annotation.body.split('/'); 
+                        let coordinates = annotation.target.id.split('xywh=')[1];
+                        let xywh = coordinates.split(',');
+                        imageAnnotations.push({
+                            body: bodyUrl[bodyUrl.length - 1],
+                            x: xywh[0],
+                            y: xywh[1],
+                            w: xywh[2],
+                            h: xywh[3],
+                        });
+                    } 
+                }
+
+                if (typeof annotation.body !== 'undefined') {
+                    if (annotation.target.type === 'Text') {
+                        let bodyUrl = annotation.body.split('/'); 
+                        textAnnotations.push({
+                            body: bodyUrl[bodyUrl.length - 1],
+                            start: annotation.target.selector.start,
+                            end: annotation.target.selector.end,
+                        });
+                    }
+                }
+            })
+            return res.json({imageAnnotations, textAnnotations});
         });
     },
 

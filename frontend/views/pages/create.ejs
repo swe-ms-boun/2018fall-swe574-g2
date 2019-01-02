@@ -3,6 +3,44 @@
     width: 100%;
     height: 420px;
 }
+
+.pac-card {
+        margin: 10px 10px 0 0;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        background-color: #fff;
+      }
+
+      #pac-container {
+        padding-bottom: 12px;
+        margin-right: 12px;
+      }
+
+      .pac-controls {
+        display: inline-block;
+        padding: 5px 11px;
+      }
+
+      .pac-controls label {
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      #pac-input {
+        background-color: #fff;
+        font-size: 15px;
+        font-weight: 300;
+        margin-top: 12px;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 700px;
+      }
+
+
 </style>
 
 <form action="/post/new" method="get">
@@ -19,8 +57,19 @@
     <textarea class="form-control" name="body" placeholder="body" rows="5"></textarea>
 </div>
 
+<div class="custom-file">
+<input type="file" class="custom-file-input" id="file" onchange="upload()">
+<label id="custom-file-label" class="custom-file-label" for="file">Upload a picture for your memory...</label>
+</div>
+
+<div id="output"></div>
+<br>
+
+
+<input id="pac-input" class="controls form-control" type="text" placeholder="Search for a location or a place...">
 <div id="map"></div>
 
+<input type="hidden" id="image_url" name="image_url" value="none">
 <input type="hidden" id="lat" name="lat" value="0">
 <input type="hidden" id="lng" name="lng" value="0">
 
@@ -32,72 +81,146 @@
 
 <br>
 
+<script src="/optionaljs/axios.js"></script>
+
 <script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCExsA0cQ9NF5O2KFcguJogK0K7yAs3RqQ&callback=initMap">
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCExsA0cQ9NF5O2KFcguJogK0K7yAs3RqQ&libraries=places&callback=initAutocomplete">
 </script>
 
 <script>
 
-var map; //Will contain map object.
-var marker = false; ////Has the user plotted their location marker? 
-        
-//Function called to initialize / create the map.
-//This is called when the page has loaded.
-function initMap() {
- 
-    //The center location of our map.
-    var centerOfMap = new google.maps.LatLng(52.357971, -6.516758);
- 
-    //Map options.
-    var options = {
-      center: centerOfMap, //Set center.
-      zoom: 7 //The zoom value.
+
+function initAutocomplete() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 41.0854874, lng: 29.0420647},
+          zoom: 14,
+          mapTypeId: 'roadmap'
+        });
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+            var icon = {
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            var currentLocation = markers[0].getPosition();
+            //Add lat and lng values to a field that we can save.
+            document.getElementById('lat').value = currentLocation.lat(); //latitude
+            document.getElementById('lng').value = currentLocation.lng(); //longitude
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
+        });
+      }
 
 
-    };
- 
-    //Create the map object.
-    map = new google.maps.Map(document.getElementById('map'), options);
- 
-    //Listen for any clicks on the map.
-    google.maps.event.addListener(map, 'click', function(event) {                
-        //Get the location that the user clicked.
-        var clickedLocation = event.latLng;
-        //If the marker hasn't been added.
-        if(marker === false){
-            //Create the marker.
-            marker = new google.maps.Marker({
-                position: clickedLocation,
-                map: map,
-                draggable: true //make it draggable
-            });
-            //Listen for drag events!
-            google.maps.event.addListener(marker, 'dragend', function(event){
-                markerLocation();
-            });
-        } else{
-            //Marker has already been added, so just change its location.
-            marker.setPosition(clickedLocation);
-        }
-        //Get the marker's location.
-        markerLocation();
-    });
-}
-        
-//This function will get the marker's current location and then add the lat/long
-//values to our textfields so that we can save the location.
-function markerLocation(){
-    //Get location.
-    var currentLocation = marker.getPosition();
-    //Add lat and lng values to a field that we can save.
-    document.getElementById('lat').value = currentLocation.lat(); //latitude
-    document.getElementById('lng').value = currentLocation.lng(); //longitude
+// //     //Listen for any clicks on the map.
+//     google.maps.event.addListener(map, 'click', function(event) {             
+//         //Get the location that the user clicked.
+//         var clickedLocation = event.latLng;
+//         //If the marker hasn't been added.
+//         if(marker === false){
+//             //Create the marker.
+//             marker = new google.maps.Marker({
+//                 position: clickedLocation,
+//                 map: map,
+//                 draggable: true //make it draggable
+//             });
+//             //Listen for drag events!
+//             google.maps.event.addListener(marker, 'dragend', function(event){
+//                 markerLocation();
+//             });
+//         } else{
+//             //Marker has already been added, so just change its location.
+//             marker.setPosition(clickedLocation);
+//         }
+//         //Get the marker's location.
+//         markerLocation();
+//     });
 
-    console.log(document.getElementById('lat').value);
-}
         
-        
-//Load the map when the page has finished loading.
-google.maps.event.addDomListener(window, 'load', initMap);
+// //This function will get the marker's current location and then add the lat/long
+// //values to our textfields so that we can save the location.
+// function markerLocation(){
+//     //Get location.
+//     var currentLocation = marker.getPosition();
+//     //Add lat and lng values to a field that we can save.
+//     document.getElementById('lat').value = currentLocation.lat(); //latitude
+//     document.getElementById('lng').value = currentLocation.lng(); //longitude
 
+//     console.log(document.getElementById('lat').value);
+// }
+        
+        
 </script>
+
+<script>
+
+function upload() {
+    const config = {
+            headers: { 'content-type': 'multipart/form-data' },
+            onUploadProgress: (progressEvent) => {
+                    if (progressEvent.lengthComputable) {
+                        document.getElementById('custom-file-label').innerText = 'Please wait...';
+                    }
+           }
+        }
+    let data = new FormData();
+    data.append('image', document.getElementById('file').files[0], 'image');
+    axios.post('/post/upload', data, config).then((response) => {
+        console.log(response.data)
+        document.getElementById('custom-file-label').innerText = 'You picture has been uploaded!';
+        document.getElementById('image_url').value = response.data.file;
+    })
+}
+
+  </script>
