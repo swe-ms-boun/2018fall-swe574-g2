@@ -361,7 +361,7 @@ def add_annotation(form):
                 try:
                     mongo_query['body']['type'] = CLASS_TYPES[type]
                 except KeyError:
-                    LOGGER.warning("Specified type is wrong. Check the type: " + type)
+                    return jsonify({'ok': False, 'message': 'Class type is not valid'}), 500
 
             if 'text_direction' in body_part:
                 mongo_query['body']['text_direction'] = body_part['text_direction']
@@ -398,6 +398,10 @@ def add_annotation(form):
                             mongo_query['body']['selector']['conformsTo'] = selector_part["conformsTo"]
                             # xywh=50,50,640,480
                             mongo_query['body']['selector']['value'] = selector_part["value"]
+                        else:
+                            return jsonify({'ok': False,
+                                            'message': 'For FragmentSelector, '
+                                                       'conformsTo and value field should be exist.'}), 500
                 else:
                     return jsonify({'ok': False,
                                     'message': 'The type is missing for selector part. Selector part accepts either '
@@ -444,7 +448,7 @@ def add_annotation(form):
                 try:
                     mongo_query['target']['type'] = CLASS_TYPES[type]
                 except KeyError:
-                    LOGGER.warning("Specified type is wrong. Check the type: " + type)
+                    return jsonify({'ok': False, 'message': 'Class type is not valid'}), 500
 
             if 'text_direction' in body_part:
                 mongo_query['target']['text_direction'] = body_part['text_direction']
