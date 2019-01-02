@@ -38,6 +38,7 @@ class Posts(models.Model):
     datetime = models.DateTimeField(auto_now_add=True)
     votes = models.IntegerField()
     location = models.CharField(max_length=200)
+    image_url = models.CharField(max_length=300, null=True)
     type = models.CharField(max_length=20, choices=POST_TYPES, null=True)
     target_type = models.CharField(max_length=50, choices=TARGET_TYPES, null=True)
     start = models.IntegerField(null=True)

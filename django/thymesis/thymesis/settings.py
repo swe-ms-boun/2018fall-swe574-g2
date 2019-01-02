@@ -81,12 +81,8 @@ WSGI_APPLICATION = 'thymesis.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'yjrlffvm' ,
-        'USER': 'yjrlffvm',
-        'PASSWORD': 'T8UMx1UGQtrOsb-LeaxataUuSZMYAz19',
-        'HOST': 'stampy.db.elephantsql.com',
-        'PORT': '5432'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
