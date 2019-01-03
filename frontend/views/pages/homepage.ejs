@@ -29,7 +29,7 @@ For more information, see:
 <script>
 
 <% posts.forEach((memory) => { %>
-  axios.get('http://thymesis-memories-v3.herokuapp.com/api/Users/<%=memory.user%>').then((response) => {
+  axios.get('https://thymesis-memories-v3.herokuapp.com/api/Users/<%=memory.user%>').then((response) => {
     document.getElementById('<%=memory.post_id%>').innerText = response.data.username;
   })
 <% }) %>

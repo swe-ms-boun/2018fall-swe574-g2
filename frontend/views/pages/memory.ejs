@@ -17,7 +17,7 @@
     <% } %>
   <% } %>
   <p class="card-text"><i><%= memory.summary %></i></p>
-  <p class="card-text"><%= memory.body %>
+  <p class="card-text"><span id="memory-text"><%= memory.body %></span>
   <% if (typeof user !== 'undefined') { %>
   <a href="/annotate/<%=memory.post_id%>"><button class="btn btn-warning my-2 my-sm-0 float-right">Annotate text</button></a>
   <% } %>
@@ -52,10 +52,15 @@
 <div class="card-footer text-muted">
     <form action="/comment/new" method="get">
     <form>
-    <input type="text" class="form-control" placeholder="Write your comment..." name="comment">
     <input type="hidden" name="post" value="<%= memory.post_id %>">
     <input type="hidden" name="user" value="<%= user.user_id %>">
+    <div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Write your comment..." name="comment">
+    <div class="input-group-append">
     <button class="btn btn-info my-2 my-sm-0" type="submit">Submit</button>
+    </div>
+    </div>
+    
     </form>
 </div>
 <% } %>
@@ -67,36 +72,62 @@
 
 <script>
 
+String.prototype.splice = function(idx, rem, str) {
+    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+};
+
 anno.hideSelectionWidget()
 
 axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) => {
-    console.log(response.data.imageAnnotations);
+    console.log(response.data.textAnnotations);
     setTimeout(function () {
         response.data.imageAnnotations.forEach((a) => {
-        anno.addAnnotation({
-            src: '<%=memory.image_url%>',
-            context: window.location.href,
-            text: a.body,
-            shapes: [{
-                type : 'rect',
-                geometry : { x: a.x, y: a.y, width: a.w, height: a.h }
-            }],
-        })
-    }, 1000);   
-})    
+            anno.addAnnotation({
+                src: '<%=memory.image_url%>',
+                context: window.location.href,
+                text: a.body,
+                shapes: [{
+                    type : 'rect',
+                    geometry : { x: a.x, y: a.y, width: a.w, height: a.h }
+                }],
+            })
+        }, 1000);   
+    });
+
+    let textAnns = response.data.textAnnotations
+    textAnns.sort(function(a, b){
+                var keyA = a.start,
+                    keyB = b.start
+                if(keyA < keyB) return -1;
+                if(keyA > keyB) return 1;
+                return 0;
+            });
+
+
+            console.log(textAnns)
+    for (let i=0; i<textAnns.length; i+=1) {
+        
+        let memo = document.getElementById('memory-text').innerHTML;
+        let start = textAnns[i].start + i*13;
+        let end = textAnns[i].end + i*13;
+        console.log(memo)
+        memo = memo.splice(start, 0, "<mark>");
+        console.log(memo)
+        memo = memo.splice(end + 6, 0, "</mark>");
+        document.getElementById('memory-text').innerHTML = memo; 
+    }
+
  
 });
 
-</script>
+  
 
-<script>
-
-  axios.get('http://thymesis-memories-v3.herokuapp.com/api/Users/<%=memory.user%>').then((response) => {
+  axios.get('https://thymesis-memories-v3.herokuapp.com/api/Users/<%=memory.user%>').then((response) => {
     document.getElementById('<%=memory.post_id%>').innerText = response.data.username;
   })
 
   <% comments.forEach((comment) => { %>
-  axios.get('http://thymesis-memories-v3.herokuapp.com/api/Users/<%=comment.user%>').then((response) => {
+  axios.get('https://thymesis-memories-v3.herokuapp.com/api/Users/<%=comment.user%>').then((response) => {
     document.getElementById('<%=comment.comment_id%>').innerText = 'by ' + response.data.username;
   })
   <% }) %>
