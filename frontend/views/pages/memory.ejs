@@ -17,7 +17,7 @@
     <% } %>
   <% } %>
   <p class="card-text"><i><%= memory.summary %></i></p>
-  <p class="card-text" id="memory-text"><%= memory.body %>
+  <p class="card-text"><span id="memory-text"><%= memory.body %></span>
   <% if (typeof user !== 'undefined') { %>
   <a href="/annotate/<%=memory.post_id%>"><button class="btn btn-warning my-2 my-sm-0 float-right">Annotate text</button></a>
   <% } %>
@@ -94,14 +94,29 @@ axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) =>
         }, 1000);   
     });
 
-    response.data.textAnnotations.forEach((a) => {
+    let textAnns = response.data.textAnnotations
+    textAnns.sort(function(a, b){
+                var keyA = a.start,
+                    keyB = b.start
+                if(keyA < keyB) return -1;
+                if(keyA > keyB) return 1;
+                return 0;
+            });
+
+
+            console.log(textAnns)
+    for (let i=0; i<textAnns.length; i+=1) {
+        
         let memo = document.getElementById('memory-text').innerHTML;
-        let start = a.start;
-        let end = a.end;
+        let start = textAnns[i].start + i*13;
+        let end = textAnns[i].end + i*13;
+        console.log(memo)
         memo = memo.splice(start, 0, "<mark>");
+        console.log(memo)
         memo = memo.splice(end + 6, 0, "</mark>");
-        document.getElementById('memory-text').innerHTML = memo;      
-    })
+        document.getElementById('memory-text').innerHTML = memo; 
+    }
+
  
 });
 
