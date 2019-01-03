@@ -27,6 +27,7 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
 
+REVIEW_BASE_URL = 'http://thymesis.com/review/'
 ANNOTATION_BASE_URL = 'http://thymesis.com/annotation/'
 MEMORY_BASE_URL = 'http://thymesis.com/memory/'
 
@@ -712,6 +713,38 @@ def get_annotation_by_target_id(id):
         annotation_dict[count] = annotation
         count = count + 1
     return jsonify({'ok': True, 'message': annotation_dict}), 200
+
+
+@app.route('/add/review/', methods=['PUT'])
+# @auth.login_required
+@validate_form(form=ReviewCreationForm)
+def add_review(form):
+    body = form.data['body']
+
+    review_counter = mongo.db.review.count({})
+    review_counter = review_counter + 1
+    if not body:
+        body = ""
+
+    mongo_query = {
+        "body": body,
+        "id": REVIEW_BASE_URL + str(review_counter)
+    }
+
+    mongo.db.review.insert(mongo_query)
+    return jsonify({'ok': True, 'message': 'review id: ' + review_counter}), 200
+
+
+@app.route('/get/review/<id>', methods=['GET'])
+# @auth.login_required
+def get_review(id):
+    id = REVIEW_BASE_URL + str(id)
+    review = mongo.db.review.find_one({"id": id})
+    if review:
+        review.pop('_id')
+        return jsonify({'ok': True, 'message': review}), 200
+    else:
+        return jsonify({'ok': True, 'message': 'There is no review'}), 200
 
 
 @app.errorhandler(404)
