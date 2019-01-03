@@ -587,12 +587,15 @@ def add_annotation(form):
 
     if 'id' in form.data and form.data['id'] != "":
         mongo_query['id'] = form.data['id']
-    elif 'target' in form.data and 'id' in body_part:
-        if '#' in body_part['id']:
+    elif 'target' in form.data and ('id' in body_part or 'source' in body_part):
+        if 'id' in body_part and '#' in body_part['id']:
             splitted_body = body_part['id'].split('#')[0]
             annotation_number = mongo.db.annotation.count({'target.id': {'$regex': splitted_body}})
         else:
-            annotation_number = mongo.db.annotation.count({'target.id': {'$regex': body_part['id']}})
+            if 'id' in body_part:
+                annotation_number = mongo.db.annotation.count({'target.id': {'$regex': body_part['id']}})
+            elif 'source' in body_part:
+                annotation_number = mongo.db.annotation.count({'target.id': {'$regex': body_part['source']}})
         annotation_number += 1
         annotation_uri = ANNOTATION_BASE_URL + str(annotation_number)
         mongo_query['id'] = annotation_uri
