@@ -46,15 +46,31 @@
 <form action="/post/new" method="get">
 
 <div class="form-group">
-  <input type="text" class="form-control" placeholder="title" name="title">
+    <div class="input-group mb-3">
+        <input maxlength="20" oninput="inputEvent()" id="title" type="text" class="form-control" placeholder="title" name="title">
+        <div class="input-group-append">
+        <span id="title-counter" class="input-group-text">20</span>
+      </div>
+    </div>
 </div>
 
 <div class="form-group">
-  <input type="text" class="form-control" placeholder="summary" name="summary">
+    <div class="input-group mb-3">
+        <input maxlength="30" oninput="inputEvent()" id="summary" type="text" class="form-control" placeholder="summary" name="summary">
+        <div class="input-group-append">
+        <span id="summary-counter" class="input-group-text">30</span>
+      </div>
+    </div>
 </div>
 
 <div class="form-group">
-    <textarea class="form-control" name="body" placeholder="body" rows="5"></textarea>
+<div class="input-group mb-3">
+    <textarea class="form-control" maxlength="3000" oninput="inputEvent()"  id="body" name="body" placeholder="body" rows="5"></textarea>
+    <div class="input-group-append">
+    <span id="body-counter" class="input-group-text">3000</span>
+  </div>
+    </div>
+
 </div>
 
 <div class="custom-file">
@@ -221,6 +237,12 @@ function upload() {
         document.getElementById('custom-file-label').innerText = 'You picture has been uploaded!';
         document.getElementById('image_url').value = response.data.file;
     })
+}
+
+function inputEvent() {
+    document.getElementById('title-counter').innerText = 20 - document.getElementById('title').value.length;
+    document.getElementById('summary-counter').innerText = 30 - document.getElementById('summary').value.length;
+    document.getElementById('body-counter').innerText = 3000 - document.getElementById('body').value.length;
 }
 
   </script>

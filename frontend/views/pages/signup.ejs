@@ -1,0 +1,84 @@
+<form action="/user/new" method="get">
+
+<div class="form-group">
+    <div class="input-group mb-3">
+        <input maxlength="50" oninput="inputEvent()" id="firstname" type="text" class="form-control" placeholder="first name" name="firstname">
+        <div class="input-group-append">
+        <span id="firstname-counter" class="input-group-text">50</span>
+      </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="input-group mb-3">
+        <input maxlength="50" oninput="inputEvent()" id="lastname" type="text" class="form-control" placeholder="last name" name="lastname">
+        <div class="input-group-append">
+        <span id="lastname-counter" class="input-group-text">50</span>
+      </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="input-group mb-3">
+        <input maxlength="50" oninput="inputEvent()" id="username" type="text" class="form-control" placeholder="username" name="username">
+        <div class="input-group-append">
+        <span id="username-counter" class="input-group-text">50</span>
+      </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="input-group mb-3">
+        <input maxlength="50" oninput="inputEvent()" id="password" type="password" class="form-control" placeholder="password" name="user_password">
+        <div class="input-group-append">
+        <span id="password-counter" class="input-group-text">50</span>
+      </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="input-group mb-3">
+        <input maxlength="50" oninput="inputEvent()" id="email" type="email" class="form-control" placeholder="email" name="email">
+        <div class="input-group-append">
+        <span id="email-counter" class="input-group-text">70</span>
+      </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="input-group mb-3">
+        <input maxlength="50" oninput="inputEvent()" id="mobile" type="text" class="form-control" placeholder="mobile" name="mobile_number">
+        <div class="input-group-append">
+        <span id="mobile-counter" class="input-group-text">20</span>
+      </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="input-group mb-3">
+        <input maxlength="50" oninput="inputEvent()" id="homepage" type="text" class="form-control" placeholder="home page" name="home_page">
+        <div class="input-group-append">
+        <span id="firstname-counter" class="input-group-text">100</span>
+      </div>
+    </div>
+</div>
+
+<button class="btn btn-info my-2 my-sm-0" type="submit">Submit</button>
+
+</form>
+
+<script>
+
+function inputEvent() {
+    document.getElementById('firstname-counter').innerText = 50 - document.getElementById('firstname').value.length;
+    document.getElementById('lastname-counter').innerText = 50 - document.getElementById('lastname').value.length;
+    document.getElementById('email-counter').innerText = 70 - document.getElementById('email').value.length;
+    document.getElementById('password-counter').innerText = 50 - document.getElementById('password').value.length;
+    document.getElementById('mobile-counter').innerText = 20 - document.getElementById('mobile').value.length;
+    document.getElementById('username-counter').innerText = 50 - document.getElementById('username').value.length;
+    document.getElementById('homepage-counter').innerText = 100 - document.getElementById('homepage').value.length;
+
+
+}
+
+</script>

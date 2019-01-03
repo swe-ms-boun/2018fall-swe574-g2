@@ -72,6 +72,7 @@ a[href^="#selector"]:before {
 </div>
 
 <script src="/optionaljs/annotation.js"></script>
+<script src="/optionaljs/axios.js"></script>
 
 <script>
 function buttonClicked() {
@@ -79,11 +80,11 @@ function buttonClicked() {
   let start = document.getElementById("corpus").innerText.indexOf(selection);
   let body = document.getElementById("body").innerText;
   let end = selection.length + start;
-  let id = '/memory/<%=memory.post_id%>';
-  let target = `{"type":"Text","source":"<%=memory.post_id%>","selector":{"type":"TextPositionSelector","start":"${start}","end":"${end}"}}`
-  let url = `/annotate/new?id=${id}&target=${target}`
-  console.log(url)
-  window.location.href = url;
-  return false;
+  let target = '{"type":"Text","source":"http://thymesis.com/memory/<%=memory.post_id%>","selector":{"type":"TextPositionSelector","start":" '+ start +'","end":"'+end+'"}}'
+  axios.get('/post/newanno?target=' + target).then((response) => {
+    console.log(response.data);
+    window.location.href = '/memory/<%=memory.post_id%>';
+    return false
+  })
 }
 </script>

@@ -34,16 +34,19 @@ axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) =>
 }); 
 
 anno.addHandler('onAnnotationCreated', (annotation) => {
+    let str = annotation.text;
+    str = str.replace(/ /g,"_")
+    console.log(str)
     let data = {
         id: '<%=memory.post_id%>',
-        body: annotation.text,
+        body: str,
         x: annotation.shapes[0].geometry.x,
         y: annotation.shapes[0].geometry.y,
         w: annotation.shapes[0].geometry.width,
         h: annotation.shapes[0].geometry.height,
     }
     console.log(data);
-    axios.post('/post/newimganno?id=<%=memory.post_id%>&body=' + annotation.text 
+    axios.post('/post/newimganno?id=<%=memory.post_id%>&body=' + str
     + '&x=' + annotation.shapes[0].geometry.x 
     + '&y=' + annotation.shapes[0].geometry.y
     + '&w=' + annotation.shapes[0].geometry.width
