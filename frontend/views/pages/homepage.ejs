@@ -5,6 +5,13 @@ For more information, see:
 • https://sailsjs.com/documentation/concepts/routes
 -->
 
+<style>
+img.thumbnail {
+  width:64px; 
+  height: auto;
+}
+</style>
+
 <div class="jumbotron">
   <center><h1>Thymesis</h1></center>
   <br>
@@ -14,10 +21,21 @@ For more information, see:
       <a href="/memory/<%=memory.post_id%>"><h4><%= memory.title %></h4></a>
     </div>
     <div class="card-body">
+    <div class="row">
+      <div class="col-1">
+      <% if (memory.image_url === 'none') { %>
+      <img class="thumbnail" src="/images/no-image.png" />
+      <%} else {%>
+      <img class="thumbnail" src="<%=memory.image_url%>" />
+      <%}%>
+      </div>
+      <div class="col-11">
       <p class="card-text"><%= memory.summary %></p>
+      </div>
+    </div>
     </div>
       <div class="card-footer text-muted">
-      created <%= memory.datetime %> by <span id="<%=memory.post_id%>" class="badge badge-primary badge-pill"></span> from <a href="https://www.google.com/maps/place/<%= memory.location.replace(':',',')%>">this location.</a>
+      created <%= memory.datetime %> by <a href="/userpage/<%=memory.user%>"><span id="<%=memory.post_id%>" class="badge badge-primary badge-pill"></span></a> from <a href="https://www.google.com/maps/place/<%= memory.location.replace(':',',')%>">this location.</a>
     </div>
   </div>
   <% }) %>
