@@ -24,7 +24,7 @@
   </p>
 </div>
   <div class="card-footer text-muted">
-  created <%= memory.datetime %> by <span id="<%=memory.post_id%>" class="badge badge-primary badge-pill"></span> from <a href="https://www.google.com/maps/place/<%= memory.location.replace(':',',')%>">this location.</a>
+  created <%= memory.datetime %> by <a href="/userpage/<%=memory.user%>"><span id="<%=memory.post_id%>" class="badge badge-primary badge-pill"></span></a> from <a href="https://www.google.com/maps/place/<%= memory.location.replace(':',',')%>">this location.</a>
 </div>
 </div>
 
@@ -38,7 +38,7 @@
     <% comments.forEach((comment) => { %>
         <li class="list-group-item align-items-center">
         <p><%= comment.body %></p>
-        <span id="<%=comment.comment_id%>" class="badge badge-secondary badge-pill"></span>
+        <a href="/userpage/<%=comment.user%>"><span id="<%=comment.comment_id%>" class="badge badge-secondary badge-pill"></span></a>
         <span class="badge badge-pill badge-info"><%= comment.datetime %></span>
     </li>
     <% }) %>
@@ -103,16 +103,12 @@ axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) =>
                 return 0;
             });
 
-
-            console.log(textAnns)
     for (let i=0; i<textAnns.length; i+=1) {
         
         let memo = document.getElementById('memory-text').innerHTML;
         let start = textAnns[i].start + i*13;
         let end = textAnns[i].end + i*13;
-        console.log(memo)
         memo = memo.splice(start, 0, "<mark>");
-        console.log(memo)
         memo = memo.splice(end + 6, 0, "</mark>");
         document.getElementById('memory-text').innerHTML = memo; 
     }
@@ -129,7 +125,10 @@ axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) =>
   <% comments.forEach((comment) => { %>
   axios.get('https://thymesis-memories-v3.herokuapp.com/api/Users/<%=comment.user%>').then((response) => {
     document.getElementById('<%=comment.comment_id%>').innerText = 'by ' + response.data.username;
-  })
+    console.log(response.data)
+  }).catch((error) => {
+      console.log(error)
+  } )
   <% }) %>
 
 

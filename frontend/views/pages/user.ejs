@@ -1,0 +1,33 @@
+<div class="jumbotron">
+  <center><h2><%= pageUser.firstname%> <%=pageUser.lastname%></h2></center>
+  <center><h4><%= pageUser.username%> | <a href="mailto:<%=pageUser.email%>"><%=pageUser.email%></a></h4></center>
+  <br>
+  <% if (userPosts.length === 0) { %>
+  <div class="card border-primary mb-3">
+  <div class="card-body">
+    <p class="card-text">This user does not have any posts!</p>
+  </div>
+</div>
+<% } %>
+  <% userPosts.forEach((memory) => { %>
+    <div class="card border-primary mb-3">
+    <div class="card-header">
+      <a href="/memory/<%=memory.post_id%>"><h4><%= memory.title %></h4></a>
+    </div>
+    <div class="card-body">
+      <p class="card-text"><%= memory.summary %></p>
+    </div>
+      <div class="card-footer text-muted">
+      created <%= memory.datetime %> from <a href="https://www.google.com/maps/place/<%= memory.location.replace(':',',')%>">this location.</a>
+    </div>
+  </div>
+  <% }) %>
+  
+
+</div>
+
+<script src="/optionaljs/axios.js"></script>
+
+<script>
+
+</script>

@@ -25,6 +25,11 @@ module.exports.routes = {
   // Login routes
   '/login': 'UserController.login',
   '/logout': 'UserController.logout',
+  '/register': 'UserController.signup',
+
+  // User routes
+  '/userpage/:user': 'UserController.page',
+
 
   // Memory routes
   '/create': 'PostController.create',

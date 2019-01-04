@@ -187,3 +187,8 @@ class UpdateCreatorForm(BaseForm):
         if not id:
             raise ValueError("id field at least one must be filled.")
         return res
+
+
+class ReviewCreationForm(BaseForm):
+    body = StringField('body')
+    id = StringField('id')
