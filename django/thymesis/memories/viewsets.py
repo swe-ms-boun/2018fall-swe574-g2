@@ -7,13 +7,13 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.all()
     serializer_class = UsersSerializer
     filter_backends = (filters.SearchFilter,) 
-    search_fields=('user_id', 'firstname', 'lastname', 'username')
+    search_fields=( 'firstname', 'lastname', 'username')
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Posts.objects.all()
     serializer_class = PostsSerializer
     filter_backends = (filters.SearchFilter,) 
-    search_fields=('post_id', 'user', 'title')
+    search_fields=(  'title', 'summary', 'body')
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comments.objects.all()

@@ -39,6 +39,7 @@ class Posts(models.Model):
     votes = models.IntegerField()
     location = models.CharField(max_length=200)
     image_url = models.CharField(max_length=300, null=True)
+    happened_on = models.DateField(null=True)
     type = models.CharField(max_length=20, choices=POST_TYPES, null=True)
     target_type = models.CharField(max_length=50, choices=TARGET_TYPES, null=True)
     start = models.IntegerField(null=True)
