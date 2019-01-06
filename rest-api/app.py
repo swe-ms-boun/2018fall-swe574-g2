@@ -706,13 +706,12 @@ def get_annotation_by_target_id(id):
         annotation_id = id
 
     annotation_list = mongo.db.annotation.find({'target.id': {'$regex': annotation_id}})
-    count = 0
+    annotations_list = list()
     for annotation in annotation_list:
         #  ObjectID is not JSON serializable, so pop it.
         annotation.pop('_id')
-        annotation_dict[count] = annotation
-        count = count + 1
-    return jsonify({'ok': True, 'message': annotation_dict}), 200
+        annotations_list.append(annotation)
+    return jsonify({'ok': True, 'message': annotations_list}), 200
 
 
 @app.route('/add/review/', methods=['PUT'])
