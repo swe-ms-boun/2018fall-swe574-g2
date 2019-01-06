@@ -12,8 +12,8 @@ const moment = require('moment');
 const options =
     { // This is the usual stuff
     adapter: require('skipper-better-s3')
-    , key: 'AKIAJSEX4EBIAII4TUZQ'
-    , secret: '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'
+    , key: process.env.S3_KEY
+    , secret: process.env.S3_SECRET
     , bucket: 'thymesis-aws'
     , region: 'us-east-1'
     , s3params:
