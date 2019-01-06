@@ -119,7 +119,7 @@ def add_creator(form):
         "id": form.data['id'],
         "email_sha1": email_sha1,
         "home_page": form.data['home_page'],
-        "created_time": datetime.datetime.now().isoformat() + "Z"
+        #"created_time": datetime.datetime.now().isoformat() + "Z"
     }
 
     if 'name' in form.data and form.data['name']:
@@ -305,7 +305,7 @@ def add_annotation(form):
     #  context of the annotation should be like: https://www.w3.org/ns/anno.jsonld
     mongo_query = {
         "context": context,
-        "created_time": datetime.datetime.now().isoformat() + "Z"
+        "created": datetime.datetime.now().isoformat() + "Z"
     }
 
     if 'type' in form.data['type']:
@@ -536,7 +536,7 @@ def add_annotation(form):
         check_user_field(mongo_query, user, 'email')
         check_user_field(mongo_query, user, 'email_sha1')
         check_user_field(mongo_query, user, 'home_page')
-        check_user_field(mongo_query, user, 'created_time')
+        #check_user_field(mongo_query, user, 'created_time')
 
         #  Check optional fields whether exists or not and if so write them.
         if 'type' in user:
