@@ -374,7 +374,7 @@ def add_annotation(form):
                 mongo_query['body']['value'] = body_part['value']
             if 'creator' in body_part:
                 mongo_query['body']['creator'] = body_part['creator']
-                                
+
             if 'selector' in body_part:
                 mongo_query['body']['selector'] = {}
                 selector_part = body_part['selector']
@@ -521,8 +521,6 @@ def add_annotation(form):
         except Exception as e:
             return jsonify({'ok': False, 'message': e.message}), 500
 
-    #  creator id is not required field for anonymous users if exists.
-    #  DECISION: For our case, for now, anonymous user cannot be exist
     # because only logged in users can be create annotation.
     #  So actually there should be a creator_id for our case although it is not required in annotation model.
     if 'creator_id' in form.data and form.data['creator_id']:
@@ -556,7 +554,6 @@ def add_annotation(form):
     #  creator is not required for an annotation.
     elif 'creator' in form.data and form.data['creator']:
         #  This part will not be used in our application.
-        #  However, when a user called our API, it has to be called.
         mongo_query['creator'] = {}
         creator_part = form.data['creator']
         if 'id' in creator_part:
