@@ -45,6 +45,7 @@ CLASS_TYPES = {
     'sound': 'Sound',
     'text': 'Text',
     'dataset': 'Dataset',
+    'TextualBody': 'TextualBody'
 }
 
 
@@ -331,8 +332,7 @@ def add_annotation(form):
                 try:
                     mongo_query['body']['id'] = body_part['source']
                 except KeyError:
-                    return jsonify(
-                        {'ok': False, 'message': 'If you create a body, you should send id'}), 500
+                    pass
 
             if 'purpose' in body_part:
                 # describing, tagging, assessing, bookmarking, classifying, commenting...
@@ -370,7 +370,11 @@ def add_annotation(form):
                 mongo_query['body']['processing_language'] = body_part['processing_language']
             if 'id' in body_part:
                 mongo_query['body']['id'] = body_part['id']
-
+            if 'value' in body_part:
+                mongo_query['body']['value'] = body_part['value']
+            if 'creator' in body_part:
+                mongo_query['body']['creator'] = body_part['creator']
+                                
             if 'selector' in body_part:
                 mongo_query['body']['selector'] = {}
                 selector_part = body_part['selector']
@@ -699,7 +703,6 @@ def get_annotation_by_target_id(id):
     :param id:
     :return:
     """
-    annotation_dict = dict()
     if not check_url_valid(id):
         annotation_id = MEMORY_BASE_URL + id
     else:
