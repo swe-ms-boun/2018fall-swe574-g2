@@ -35,8 +35,8 @@ axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) =>
 
 anno.addHandler('onAnnotationCreated', (annotation) => {
     let str = annotation.text;
-    str = str.replace(/ /g,"_")
-    console.log(str)
+    str = '{"type":"Text","value":"'+ str +'","creator":"<%= user.username %>"}'
+
     let data = {
         id: '<%=memory.post_id%>',
         body: str,

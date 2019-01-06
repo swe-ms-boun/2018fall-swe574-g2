@@ -12,8 +12,8 @@ const moment = require('moment');
 const options =
     { // This is the usual stuff
     adapter: require('skipper-better-s3')
-    , key: process.env.S3_KEY
-    , secret: process.env.S3_SECRET
+    , key: 'AKIAJSEX4EBIAII4TUZQ'
+    , secret: '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'
     , bucket: 'thymesis-aws'
     , region: 'us-east-1'
     , s3params:
@@ -23,8 +23,8 @@ const options =
     }
 
 
-const url = 'https://thymesis-memories-v3.herokuapp.com/api/Posts/'
-const commentUrl = 'https://thymesis-memories-v3.herokuapp.com/api/Comments/'
+const url = 'https://thymesis-memories-v4.herokuapp.com/api/Posts/'
+const commentUrl = 'https://thymesis-memories-v4.herokuapp.com/api/Comments/'
 const annotationUrl = 'http://thymesis-api.herokuapp.com/add/annotation/'
 
 module.exports = {
@@ -45,9 +45,6 @@ module.exports = {
       },
 
     new: (req, res) => {
-        console.log(req.query);
-        console.log(req.cookies.user.home_page)
-        console.log(req.cookies.user.user_id)
         if (typeof req.cookies.user !== 'undefined') {
             axios.post(url, {
                 uri: req.cookies.user.home_page,
@@ -56,10 +53,11 @@ module.exports = {
                 body: req.query.body,
                 location: req.query.lat + ':' + req.query.lng,
                 image_url: req.query.image_url,
+                happened_on: req.query.date.replace('%2F','/'),
                 votes: 0,
                 user: req.cookies.user.user_id,
             }).then((response) => {
-                console.log(response.data);
+                console.log({newpostdata: response.data});
                 return res.redirect('/memory/' + response.data.post_id);
             }).catch((error) => {
                 console.log(error)
@@ -124,12 +122,7 @@ module.exports = {
 
     newimganno: (req, res) => {
         let body = req.query.body.replace(' ','%20')
-        let data = {
-            creator_id: 1,
-            body: 'http://thymesis.com/' + req.query.body,
-            target: `{type:'Image',format:'image/jpg',id:http://thymesis.com/image%23xywh=${req.query.x},${req.query.y},${req.query.w},${req.query.h}}`
-        }
-        let ur = 'http://thymesis-api.herokuapp.com/add/annotation/?creator_id=1&body=http://thymesis.com/' + body + '&target={"type":"Image","format":"image/jpg","id":"' + req.query.id + '%23xywh=' + req.query.x + ',' + req.query.y + ',' + req.query.w + ',' + req.query.h + '"}'
+        let ur = 'http://thymesis-api.herokuapp.com/add/annotation/?body=' + body + '&target={"type":"Image","format":"image/jpg","id":"' + req.query.id + '%23xywh=' + req.query.x + ',' + req.query.y + ',' + req.query.w + ',' + req.query.h + '"}'
         console.log(ur)
         axios.put(ur).then((response) => {
             return res.json(response);
@@ -168,11 +161,10 @@ module.exports = {
             annotations.forEach((annotation) => {
                 if (typeof annotation.target.id !== 'undefined') {
                     if (annotation.target.type === 'Image') {
-                        let bodyUrl = annotation.body.split('/'); 
                         let coordinates = annotation.target.id.split('xywh=')[1];
                         let xywh = coordinates.split(',');
                         imageAnnotations.push({
-                            body: bodyUrl[bodyUrl.length - 1].replace(/_/g, " "),
+                            body: annotation.body.value,
                             x: xywh[0],
                             y: xywh[1],
                             w: xywh[2],
@@ -190,6 +182,25 @@ module.exports = {
                 
             })
             return res.json({imageAnnotations, textAnnotations});
+        });
+    },
+
+    search: (req, res) => {
+        axios.get('http://thymesis-memories-v4.herokuapp.com/api/Posts/?search=' + req.query.q).then((response) => {
+            let results = response.data;
+            let query = req.query.q;
+            results.sort(function(a, b){
+                var keyA = new Date(a.datetime),
+                    keyB = new Date(b.datetime);
+                // Compare the 2 dates
+                if(keyA > keyB) return -1;
+                if(keyA < keyB) return 1;
+                return 0;
+            });
+            results.forEach((post) => {
+                post.datetime = moment(post.datetime).startOf('hour').fromNow();
+            });
+            return res.view('pages/searchresults', { results, query, user: req.cookies.user });
         });
     },
 

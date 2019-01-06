@@ -10,11 +10,28 @@ img.thumbnail {
   width:64px; 
   height: auto;
 }
+
+  /* Set the size of the div element that contains the map */
+div.postmap {
+  height: 400px;  /* The height is 400 pixels */
+  width: 100%;  /* The width is the width of the web page */
+  }
 </style>
 
 <div class="jumbotron">
   <center><h1>Thymesis</h1></center>
   <br>
+  <form action="/search" method="get">
+  <div class="form-group">
+    <div class="input-group mb-3">
+        <input class="form-control form-control-lg" type="text" placeholder="Search memories..." id="q" name="q">
+        <div class="input-group-append">
+        <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+  </div>
+  </form>
+  
   <% posts.forEach((memory) => { %>
     <div class="card border-primary mb-3">
     <div class="card-header">
@@ -35,21 +52,60 @@ img.thumbnail {
     </div>
     </div>
       <div class="card-footer text-muted">
-      created <%= memory.datetime %> by <a href="/userpage/<%=memory.user%>"><span id="<%=memory.post_id%>" class="badge badge-primary badge-pill"></span></a> from <a href="https://www.google.com/maps/place/<%= memory.location.replace(':',',')%>">this location.</a>
+      created <%= memory.datetime %> by <a href="/userpage/<%=memory.user%>">
+      <span id="<%=memory.post_id%>" class="badge badge-primary badge-pill"></span></a> 
+      <% if (memory.happened_on !== null) { %>
+      happened on <span class="badge badge-pill badge-info"><%=memory.happened_on%></span>
+      <% } %>
+      at<button type="button" class="btn btn-link" data-toggle="modal" data-target="#modal-<%=memory.post_id%>">this location.</button>
     </div>
   </div>
   <% }) %>
 
 </div>
 
-<script src="/optionaljs/axios.js"></script>
+<% posts.forEach((memory) => { %>
+  <!-- Modal -->
+  <div class="modal fade" id="modal-<%=memory.post_id%>" tabindex="-1" role="dialog" aria-labelledby="modal-<%=memory.post_id%>" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><%=memory.title%></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        <div class="postmap" id="map_<%=memory.post_id.split('-').join('_')%>"></div>
 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% }) %>
+
+<script src="/optionaljs/axios.js"></script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCExsA0cQ9NF5O2KFcguJogK0K7yAs3RqQ&callback=initMap">
+</script>
 <script>
 
 <% posts.forEach((memory) => { %>
-  axios.get('https://thymesis-memories-v3.herokuapp.com/api/Users/<%=memory.user%>').then((response) => {
+  axios.get('https://thymesis-memories-v4.herokuapp.com/api/Users/<%=memory.user%>').then((response) => {
     document.getElementById('<%=memory.post_id%>').innerText = response.data.username;
   })
 <% }) %>
 
-</script>
+function initMap() {
+
+  <% posts.forEach((memory) => { %>
+  <% if (memory.location !== 'jdkfj') { %>
+    var map_<%=memory.post_id.split('-').join('_')%> = new google.maps.Map(document.getElementById('map_<%=memory.post_id.split('-').join('_')%>'), { zoom: 12, center: {lat: <%=memory.location.split(':')[0]%>, lng: <%=memory.location.split(':')[1]%>} });
+    var marker_<%=memory.post_id.split('-').join('_')%> = new google.maps.Marker({position: {lat: <%=memory.location.split(':')[0]%>, lng: <%=memory.location.split(':')[1]%>}, map: map_<%=memory.post_id.split('-').join('_')%> });
+  <% } %>
+  <% }); %>
+}
+    </script>

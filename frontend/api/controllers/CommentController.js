@@ -7,8 +7,7 @@
 
 const axios = require('axios');
 
-const url = 'https://thymesis-memories-v3.herokuapp.com/api/Comments/'
-
+const url = 'https://thymesis-memories-v4.herokuapp.com/api/Comments/'
 
 module.exports = {
 

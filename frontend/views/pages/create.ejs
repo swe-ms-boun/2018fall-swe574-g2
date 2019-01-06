@@ -69,8 +69,15 @@
     <div class="input-group-append">
     <span id="body-counter" class="input-group-text">3000</span>
   </div>
-    </div>
+</div>
+</div>
 
+
+<div class="form-group">
+<div class="input-group mb-3">
+<input class="form-control" oninput="dateInput()" id="date" name="date" placeholder="When has this memory happened?" data-toggle="datepicker">
+<div data-toggle="datepicker"></div>
+</div>
 </div>
 
 <div class="custom-file">
@@ -78,18 +85,17 @@
 <label id="custom-file-label" class="custom-file-label" for="file">Upload a picture for your memory...</label>
 </div>
 
-<div id="output"></div>
 <br>
-
+<br>
 
 <input id="pac-input" class="controls form-control" type="text" placeholder="Search for a location or a place...">
 <div id="map"></div>
 
+<br>
+
 <input type="hidden" id="image_url" name="image_url" value="none">
 <input type="hidden" id="lat" name="lat" value="0">
 <input type="hidden" id="lng" name="lng" value="0">
-
-<br>
 
 <button class="btn btn-info my-2 my-sm-0" type="submit">Submit</button>
 
@@ -177,49 +183,14 @@ function initAutocomplete() {
           map.fitBounds(bounds);
         });
       }
-
-
-// //     //Listen for any clicks on the map.
-//     google.maps.event.addListener(map, 'click', function(event) {             
-//         //Get the location that the user clicked.
-//         var clickedLocation = event.latLng;
-//         //If the marker hasn't been added.
-//         if(marker === false){
-//             //Create the marker.
-//             marker = new google.maps.Marker({
-//                 position: clickedLocation,
-//                 map: map,
-//                 draggable: true //make it draggable
-//             });
-//             //Listen for drag events!
-//             google.maps.event.addListener(marker, 'dragend', function(event){
-//                 markerLocation();
-//             });
-//         } else{
-//             //Marker has already been added, so just change its location.
-//             marker.setPosition(clickedLocation);
-//         }
-//         //Get the marker's location.
-//         markerLocation();
-//     });
-
-        
-// //This function will get the marker's current location and then add the lat/long
-// //values to our textfields so that we can save the location.
-// function markerLocation(){
-//     //Get location.
-//     var currentLocation = marker.getPosition();
-//     //Add lat and lng values to a field that we can save.
-//     document.getElementById('lat').value = currentLocation.lat(); //latitude
-//     document.getElementById('lng').value = currentLocation.lng(); //longitude
-
-//     console.log(document.getElementById('lat').value);
-// }
-        
         
 </script>
 
 <script>
+
+$('[data-toggle="datepicker"]').datepicker({
+  format: 'yyyy-mm-dd'
+});
 
 function upload() {
     const config = {
@@ -243,6 +214,10 @@ function inputEvent() {
     document.getElementById('title-counter').innerText = 20 - document.getElementById('title').value.length;
     document.getElementById('summary-counter').innerText = 30 - document.getElementById('summary').value.length;
     document.getElementById('body-counter').innerText = 3000 - document.getElementById('body').value.length;
+}
+
+function dateInput() {
+    console.log(document.getElementById('date').value)
 }
 
   </script>

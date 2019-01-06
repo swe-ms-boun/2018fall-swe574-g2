@@ -30,7 +30,6 @@ module.exports.routes = {
   // User routes
   '/userpage/:user': 'UserController.page',
 
-
   // Memory routes
   '/create': 'PostController.create',
   '/memory/:id': 'PostController.page',
@@ -38,6 +37,8 @@ module.exports.routes = {
   '/annotateimg/:id': 'PostController.annotateimg',
   '/annotate/new': 'PostController.newanno',
 
+  // Search
+  '/search': 'PostController.search',
 
   /***************************************************************************
   *                                                                          *

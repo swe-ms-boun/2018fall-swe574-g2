@@ -7,8 +7,8 @@
 
 const axios = require('axios');
 const moment = require('moment');
-const url = 'https://thymesis-memories-v3.herokuapp.com/api/Users/?format=json';
-const postUrl = 'https://thymesis-memories-v3.herokuapp.com/api/Posts/?format=json';
+const url = 'https://thymesis-memories-v4.herokuapp.com/api/Users/?format=json';
+const postUrl = 'https://thymesis-memories-v4.herokuapp.com/api/Posts/?format=json';
 
 module.exports = {
   
@@ -42,7 +42,7 @@ module.exports = {
     },
 
     new: (req, res) => {
-        axios.post('https://thymesis-memories-v3.herokuapp.com/api/Users/', {
+        axios.post('https://thymesis-memories-v4.herokuapp.com/api/Users/', {
             username: req.query.username,
             firstname: req.query.firstname,
             lastname: req.query.lastname,
@@ -82,7 +82,7 @@ module.exports = {
                     userPosts.push(post);
                 }
             })
-            axios.get('https://thymesis-memories-v3.herokuapp.com/api/Users/'+ req.param('user')).then((response) => {
+            axios.get('https://thymesis-memories-v4.herokuapp.com/api/Users/'+ req.param('user')).then((response) => {
                 let pageUser = response.data;
                 return res.view('pages/user',{user: req.cookies.user, pageUser, userPosts})
             })

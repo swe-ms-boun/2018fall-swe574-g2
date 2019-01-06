@@ -7,8 +7,8 @@
 
 const axios = require('axios');
 const moment = require('moment')
-const url = 'https://thymesis-memories-v3.herokuapp.com/api/Posts/'
-const userUrl = 'https://thymesis-memories-v3.herokuapp.com/api/Users/'
+const url = 'https://thymesis-memories-v4.herokuapp.com/api/Posts/'
+const userUrl = 'https://thymesis-memories-v4.herokuapp.com/api/Users/'
 
 module.exports = {
   
