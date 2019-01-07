@@ -45,7 +45,7 @@ CLASS_TYPES = {
     'sound': 'Sound',
     'text': 'Text',
     'dataset': 'Dataset',
-    'TextualBody': 'TextualBody'
+    'textualbody': 'TextualBody'
 }
 
 
