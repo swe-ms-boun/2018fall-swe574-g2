@@ -28,8 +28,8 @@ app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
 
 REVIEW_BASE_URL = 'http://thymesis.com/review/'
-ANNOTATION_BASE_URL = 'http://thymesis.com/annotation/'
-MEMORY_BASE_URL = 'http://thymesis.com/memory/'
+ANNOTATION_BASE_URL = 'http://thymesis-api.herokuapp.com/annotation/'
+MEMORY_BASE_URL = 'https://aqueous-wildwood-29737.herokuapp.com/memory/'
 
 LOGGER = logging.getLogger()
 
@@ -645,6 +645,25 @@ def delete_specific_annotation(id):
     annotation_id = ANNOTATION_BASE_URL + id
     annotation = mongo.db.annotation.delete_one({"id": annotation_id})
     return jsonify({'ok': True, 'message': "Annotation is deleted if it exists"}), 200
+
+
+@app.route('/annotation/<id>', methods=['GET'])
+# @auth.login_required
+def get_annotation(id):
+    """
+        This endpoint returns an annotation by given id.
+        example call: http://thymesis-api.herokuapp.com/get/annotation/1
+    :param id:
+    :return:
+    """
+    annotation_id = ANNOTATION_BASE_URL + id
+    annotation = mongo.db.annotation.find_one({"id": annotation_id})
+    if annotation:
+        #  ObjectID is not JSON serializable, so pop it.
+        annotation.pop('_id')
+        return jsonify({'ok': True, 'message': annotation}), 200
+    else:
+        return jsonify({'ok': False, 'message': "There is no annotation with this id: " + annotation_id}), 500
 
 
 @app.route('/get/annotation/<id>', methods=['GET'])
