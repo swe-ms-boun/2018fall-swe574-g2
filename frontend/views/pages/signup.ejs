@@ -1,8 +1,8 @@
-<form action="/user/new" method="get">
+<form action="/user/new" method="get" name="signup">
 
 <div class="form-group">
     <div class="input-group mb-3">
-        <input maxlength="50" oninput="inputEvent()" id="firstname" type="text" class="form-control" placeholder="first name" name="firstname">
+        <input maxlength="50" onKeyup="checkform()" oninput="inputEvent()" id="firstname" type="text" class="form-control" placeholder="first name" name="firstname">
         <div class="input-group-append">
         <span id="firstname-counter" class="input-group-text">50</span>
       </div>
@@ -11,7 +11,7 @@
 
 <div class="form-group">
     <div class="input-group mb-3">
-        <input maxlength="50" oninput="inputEvent()" id="lastname" type="text" class="form-control" placeholder="last name" name="lastname">
+        <input maxlength="50" onKeyup="checkform()" oninput="inputEvent()" id="lastname" type="text" class="form-control" placeholder="last name" name="lastname">
         <div class="input-group-append">
         <span id="lastname-counter" class="input-group-text">50</span>
       </div>
@@ -20,7 +20,7 @@
 
 <div class="form-group">
     <div class="input-group mb-3">
-        <input maxlength="50" oninput="inputEvent()" id="username" type="text" class="form-control" placeholder="username" name="username">
+        <input maxlength="50" onKeyup="checkform()" oninput="inputEvent()" id="username" type="text" class="form-control" placeholder="username" name="username">
         <div class="input-group-append">
         <span id="username-counter" class="input-group-text">50</span>
       </div>
@@ -29,7 +29,7 @@
 
 <div class="form-group">
     <div class="input-group mb-3">
-        <input maxlength="50" oninput="inputEvent()" id="password" type="password" class="form-control" placeholder="password" name="user_password">
+        <input maxlength="50" onKeyup="checkform()" oninput="inputEvent()" id="password" type="password" class="form-control" placeholder="password" name="user_password">
         <div class="input-group-append">
         <span id="password-counter" class="input-group-text">50</span>
       </div>
@@ -38,7 +38,7 @@
 
 <div class="form-group">
     <div class="input-group mb-3">
-        <input maxlength="50" oninput="inputEvent()" id="email" type="email" class="form-control" placeholder="email" name="email">
+        <input maxlength="50" onKeyup="checkform()" oninput="inputEvent()" id="email" type="email" class="form-control" placeholder="email" name="email">
         <div class="input-group-append">
         <span id="email-counter" class="input-group-text">70</span>
       </div>
@@ -47,7 +47,7 @@
 
 <div class="form-group">
     <div class="input-group mb-3">
-        <input maxlength="50" oninput="inputEvent()" id="mobile" type="text" class="form-control" placeholder="mobile" name="mobile_number">
+        <input maxlength="50" onKeyup="checkform()" oninput="inputEvent()" id="mobile" type="text" class="form-control" placeholder="mobile" name="mobile_number">
         <div class="input-group-append">
         <span id="mobile-counter" class="input-group-text">20</span>
       </div>
@@ -56,18 +56,22 @@
 
 <div class="form-group">
     <div class="input-group mb-3">
-        <input maxlength="50" oninput="inputEvent()" id="homepage" type="text" class="form-control" placeholder="home page" name="home_page">
+        <input maxlength="50" onKeyup="checkform()" oninput="inputEvent()" id="homepage" type="text" class="form-control" placeholder="home page" name="home_page">
         <div class="input-group-append">
-        <span id="firstname-counter" class="input-group-text">100</span>
+        <span id="homepage-counter" class="input-group-text">100</span>
       </div>
     </div>
 </div>
 
-<button class="btn btn-info my-2 my-sm-0" type="submit">Submit</button>
+<button class="btn btn-info my-2 my-sm-0" id="submitbutton" type="submit">Submit</button>
 
 </form>
 
+<br>
+<p>There are no optional fields.</p>
+
 <script>
+
 
 function inputEvent() {
     document.getElementById('firstname-counter').innerText = 50 - document.getElementById('firstname').value.length;
@@ -80,5 +84,22 @@ function inputEvent() {
 
 
 }
+
+function checkform()
+    {
+        var f = document.forms["signup"].elements;
+        
+        var cansubmit = true;
+
+        for (var i = 0; i < f.length; i++) {
+            if (f[i].id !== 'submitbutton' && f[i].value.length == 0) {
+                cansubmit = false;
+            }
+        }
+
+        document.getElementById('submitbutton').disabled = !cansubmit;
+
+    }
+    window.onload = checkform;
 
 </script>
