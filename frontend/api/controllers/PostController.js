@@ -14,7 +14,7 @@ const options =
     adapter: require('skipper-better-s3')
     , key: process.env.S3_KEY
     , secret: process.env.S3_SECRET
-    , bucket: 'thymesis-aws'
+    , bucket: 'thymesis'
     , region: 'us-east-1'
     , s3params:
     { ACL: 'public-read'
