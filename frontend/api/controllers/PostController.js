@@ -132,7 +132,7 @@ module.exports = {
     },
 
     newanno: (req, res) => {
-        axios.put(`${annotationUrl}?&target=${req.query.target}&creator_1=1`).then((response) => {
+        axios.put(`${annotationUrl}?&body=${req.query.body}&target=${req.query.target}&creator_id=1`).then((response) => {
             return res.redirect('/');
         }).catch((error) => {
             let x = error.data;
@@ -174,10 +174,21 @@ module.exports = {
                 }
 
                 if (annotation.target.type === 'Text') {
-                    textAnnotations.push({
-                        start: annotation.target.selector.start,
-                        end: annotation.target.selector.end,
-                    });
+                    console.log(annotation)
+                    if (typeof annotation.body !== 'undefined') {
+                        textAnnotations.push({
+                            body: annotation.body.value,
+                            start: annotation.target.selector.start,
+                            end: annotation.target.selector.end,
+                        });
+                    } else {
+                        textAnnotations.push({
+                            body: ' ',
+                            start: annotation.target.selector.start,
+                            end: annotation.target.selector.end,
+                        });
+                    }
+                    
                 }
                 
             })

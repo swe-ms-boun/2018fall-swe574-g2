@@ -112,11 +112,15 @@ axios.get('/post/getAnnotations?post_id=<%=memory.post_id%>').then((response) =>
     for (let i=0; i<textAnns.length; i+=1) {
         
         let memo = document.getElementById('memory-text').innerHTML;
-        let start = textAnns[i].start + i*13;
-        let end = textAnns[i].end + i*13;
-        memo = memo.splice(start, 0, "<mark>");
-        memo = memo.splice(end + 6, 0, "</mark>");
+        let start = textAnns[i].start + i*25;
+        let end = textAnns[i].end + i*25;
+        memo = memo.splice(start, 0, '<mark id="mark-' + i + '">');
+        memo = memo.splice(end + 18, 0, "</mark>");
         document.getElementById('memory-text').innerHTML = memo; 
+    }
+
+    for (let i=0; i<textAnns.length; i+=1) {
+        $('#mark-' + i).attr('title', textAnns[i].body);
     }
 
  
