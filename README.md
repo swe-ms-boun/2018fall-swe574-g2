@@ -14,7 +14,7 @@ Thymesis refers to the history that is relayed by people. For example, consider 
  ------------- | ------------------- | ------------------        | ---------------------       |
 | Alan          | Endersoy            | aendersoy@gmail.com       | Front-End Developer         | 
 | Deniz         | Güngör              | denizgungor10@gmail.com   | Quality Assurance & Testing | 
-| Mehmet        | Kayaalp             | mehmet.kayaalp@ozu.edu.tr | Backend Developer           | 
+| Mehmet Kağan  | Kayaalp             | mehmet.kayaalp@ozu.edu.tr | Backend Developer           | 
 | Umut          | Seven               | umutseven92@gmail.com     | Backend Developer           |
 | Yasser        | El Kabbout          | yasserkabbout@gmail.com   | Backend Developer           |
 
