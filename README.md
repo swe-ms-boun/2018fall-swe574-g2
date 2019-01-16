@@ -13,13 +13,13 @@ Broken image and other links on main readme :(
 
 # :alien: Our Awesome Team
 
-|                | Name          | Surname             | Email                     | Role                        |
-|--------------  | ------------- | ------------------- | ------------------        | ---------------------       |
-|       <img src="https://media.licdn.com/dms/image/C4E03AQFr5pgv2VcxzQ/profile-displayphoto-shrink_800_800/0?e=1544054400&v=beta&t=OxrmqSk7nh7Ueek4krRZqu1KhfFAz5o3r8efLLV3DkA" width="100" height="100"/>         | Alan          | Endersoy            | aendersoy@gmail.com       | Front-End Developer         | 
-|     <img src="https://media.licdn.com/dms/image/C4E03AQGGLBciMBgTLA/profile-displayphoto-shrink_800_800/0?e=1544054400&v=beta&t=bvDbrtLlyG_n0GMVbe0xIrCg-XDfhMrZeiRtSybB7nI" width="100" height="100"/>           | Deniz         | Güngör              | denizgungor10@gmail.com   | Quality Assurance & Testing | 
-|      <img src="https://media.licdn.com/dms/image/C5603AQFTltJ1J8kmiQ/profile-displayphoto-shrink_800_800/0?e=1544054400&v=beta&t=Qf3jM-q4iTdEzdInoNRkh8dbkkwGLLHYagSzUwfSUjI" width="100" height="100"/>          | Mehmet        | Kayaalp             | mehmet.kayaalp@ozu.edu.tr | Backend Developer           | 
-|      <img src="https://media.licdn.com/dms/image/C5603AQGfy3GdkqoBGg/profile-displayphoto-shrink_800_800/0?e=1544054400&v=beta&t=VmOGPDJvRHaPz-i7A7OJykp7GUaaqRhOi99ZS5n3jOQ" width="100" height="100" />          | Umut          | Seven               | umutseven92@gmail.com     | Backend Developer           |
-|    ![yasserkabbout](https://media.licdn.com/dms/image/C4E03AQHQ9XdfgrC_MQ/profile-displayphoto-shrink_100_100/0?e=1544054400&v=beta&t=dp40YVVynB_o80iGcHd1tX8FOMNBkRQKQPRP2Ry0clk)            | Yasser        | El Kabbout          | yasserkabbout@gmail.com   | Backend Developer           |
+ Name          | Surname             | Email                     | Role                        |
+ ------------- | ------------------- | ------------------        | ---------------------       |
+| Alan          | Endersoy            | aendersoy@gmail.com       | Front-End Developer         | 
+| Deniz         | Güngör              | denizgungor10@gmail.com   | Quality Assurance & Testing | 
+| Mehmet        | Kayaalp             | mehmet.kayaalp@ozu.edu.tr | Backend Developer           | 
+| Umut          | Seven               | umutseven92@gmail.com     | Backend Developer           |
+| Yasser        | El Kabbout          | yasserkabbout@gmail.com   | Backend Developer           |
 
 
 ## Installation
