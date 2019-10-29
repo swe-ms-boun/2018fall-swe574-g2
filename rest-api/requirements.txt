@@ -4,7 +4,7 @@ Flask-HTTPAuth==3.2.4
 ItsDangerous==1.1.0
 Jinja2==2.10
 MarkupSafe==1.0
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 Flask-WTF==0.14.2
 Flask-PyMongo==2.2.0
 PyLD==1.0.3
