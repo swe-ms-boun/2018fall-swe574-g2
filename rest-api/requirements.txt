@@ -8,7 +8,7 @@ Werkzeug==0.14.1
 Flask-WTF==0.14.2
 Flask-PyMongo==2.2.0
 PyLD==1.0.3
-PyYAML==3.13
+PyYAML==5.4
 pytest
 requests==2.20.0
 Flask-RESTful==0.3.6
